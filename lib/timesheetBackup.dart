@@ -16,21 +16,25 @@ class _TimeSheetState extends State<TimeSheet> {
   var tsModel = TimeSheetModel(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), '');
 
   Future<List<TimeSheetModel>> getTSData() async {
-    List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
+    List tsItemList = await tsDAO.getAll(); //store data retrieved from db to a variable
     debugPrint("In getDataFromDb");
-    debugPrint('Printing tsMapList $tsMapList');
+    debugPrint('Printing tsItemList $tsItemList');
 
-    Iterable<TimeSheetModel> timesheetModels = tsMapList.map((tsMap) => TimeSheetModel.fromMap(tsMap));
-    debugPrint('type safe models: $timesheetModels');
-    // return timesheetModels;
+    List tsItems = [];
 
-    return [TimeSheetModel.getNullObject()];
+    for (var u in tsItemList) {
+      TimeSheetModel x = TimeSheetModel(u["_selectedDate"],u["_startTime"],u["_endTime"],u["_workDescription"]);
+      tsItems.add(x);
+    }
+    print(tsItems.length);
+
+    return tsItems;
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title: Text('Timesheet')),
-      body: FutureBuilder<List<TimeSheetModel>>(
+      body: FutureBuilder<List<dynamic>>(
         future: getTSData(),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
@@ -44,7 +48,7 @@ class _TimeSheetState extends State<TimeSheet> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(snapshot.data[index].workDescription),
+                  title: Text(snapshot.data[index]._workDescription),
                 );
               },
             );

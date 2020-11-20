@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
 
 
 import 'main.dart';
-
+import 'timesheetDAO.dart';
+import 'timesheetModel.dart';
 
 class InsertUpdateTimeSheet extends StatefulWidget {
   @override
@@ -12,16 +12,16 @@ class InsertUpdateTimeSheet extends StatefulWidget {
 }
 
 class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
-  String _selectedDate = '';
-  String _startTime = '';
-  String _endTime = '';
+  final TextEditingController textFormField = TextEditingController();
+  var tsDAO = TimesheetDAO();
+  var tsModel = TimeSheetModel.getNullObject();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime d = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
     debugPrint('$d');
     if (d != null) {
       setState(() {
-        _selectedDate = DateFormat.yMMMMd("en_US").format(d);
+        tsModel.selectedDate = d;
       });
     }
   }
@@ -31,9 +31,9 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
     debugPrint('$t');
     if (t != null) {
       setState(() {
-        TimeOfDay _selectedTime = t;
-        _startTime = _selectedTime.format(context);
-        debugPrint('$_startTime');
+        //tsModel.startTime = t.format(context);
+        tsModel.startTime = t;
+        debugPrint('$tsModel.startTime');
       });
     }
   }
@@ -43,9 +43,9 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
     debugPrint('$t');
     if (t != null) {
       setState(() {
-        TimeOfDay _selectedTime = t;
-        _endTime = _selectedTime.format(context);
-        debugPrint('$_endTime');
+        //tsModel.endTime = t.format(context);
+        tsModel.endTime = t;
+        debugPrint('$tsModel.endTime');
       });
     }
   }
@@ -71,7 +71,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               ),
               IconButton(icon: Icon(Icons.calendar_today), tooltip: 'Pick a date', onPressed: () => _selectDate(context)),
               Text(
-                _selectedDate,
+                tsModel.selectedDateStr,
                 style: TextStyle(fontSize: 15, color: Colors.blue, fontWeight: FontWeight.bold),
               ),
             ],
@@ -89,7 +89,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               ),
               IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectStartTime(context)),
               Text(
-                '$_startTime',
+                tsModel.toTimeStr(tsModel.startTime),
                 style: TextStyle(fontSize: 15, color: Colors.blue),
               ),
             ],
@@ -107,7 +107,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               ),
               IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectEndTime(context)),
               Text(
-                '$_endTime',
+                tsModel.toTimeStr(tsModel.endTime),
                 style: TextStyle(fontSize: 15, color: Colors.blue),
               ),
             ],
@@ -128,18 +128,33 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
             maxLength: 1000,
             maxLines: 10,
             autofocus: true,
+            controller: textFormField,
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(onPressed: null, child: Text('Submit')),
-            ElevatedButton(onPressed: ()  {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TimeSheetApp(),));},
-                child: Text('Cancel'))],
+            ElevatedButton(
+                onPressed: () {
+                  //Call database here
+                  saveTimeSheet(textFormField.text);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TimeSheetApp(),
+                      ));
+                },
+                child: Text('Submit'))
+          ],
         ),
       ]),
     );
+  }
+
+  void saveTimeSheet(String text) async {
+    tsModel.workDescription = text;
+    int savedTimeSheetId = await tsDAO.insert(tsModel);
+    print('$savedTimeSheetId');
   }
 }
