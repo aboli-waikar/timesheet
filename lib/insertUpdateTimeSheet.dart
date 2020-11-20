@@ -89,7 +89,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               ),
               IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectStartTime(context)),
               Text(
-                tsModel.toTimeStr(tsModel.startTime),
+                tsModel.timeOfDayToString(tsModel.startTime),
                 style: TextStyle(fontSize: 15, color: Colors.blue),
               ),
             ],
@@ -107,7 +107,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               ),
               IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectEndTime(context)),
               Text(
-                tsModel.toTimeStr(tsModel.endTime),
+                tsModel.timeOfDayToString(tsModel.endTime),
                 style: TextStyle(fontSize: 15, color: Colors.blue),
               ),
             ],

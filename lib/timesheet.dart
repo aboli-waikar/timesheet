@@ -13,18 +13,13 @@ class TimeSheet extends StatefulWidget {
 class _TimeSheetState extends State<TimeSheet> {
   @override
   var tsDAO = TimesheetDAO();
-  var tsModel = TimeSheetModel(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), '');
+  var tsModel = TimeSheetModel.getNullObject();
 
   Future<List<TimeSheetModel>> getTSData() async {
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
-    debugPrint("In getDataFromDb");
-    debugPrint('Printing tsMapList $tsMapList');
 
-    Iterable<TimeSheetModel> timesheetModels = tsMapList.map((tsMap) => TimeSheetModel.fromMap(tsMap));
-    debugPrint('type safe models: $timesheetModels');
-    // return timesheetModels;
-
-    return [TimeSheetModel.getNullObject()];
+    var timesheetModels = tsMapList.map((tsMap) => TimeSheetModel.readDBRowAsAMap(tsMap));
+    return timesheetModels.toList();
   }
 
   Widget build(BuildContext context) {

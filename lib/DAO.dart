@@ -84,7 +84,7 @@ class DAO<T extends Domain> {
   Future<int> insert(T t) async {
     print("inserting: $t");
     var dbClient = await db;
-    int res = await dbClient.insert("$tableName", t.toMap());
+    int res = await dbClient.insert("$tableName", t.mapForDBInsert());
     print(res.toString());
     return res;
   }
@@ -93,7 +93,7 @@ class DAO<T extends Domain> {
     var id = t.id;
     print("In DAO.update to update item with id: $id");
     var dbClient = await db;
-    return await dbClient.update(tableName, t.toUpdateMap(), where: "$pkColumn = ?", whereArgs: [id]);
+    return await dbClient.update(tableName, t.mapForDBUpdate(), where: "$pkColumn = ?", whereArgs: [id]);
   }
 
   Future<int> delete(int id) async {

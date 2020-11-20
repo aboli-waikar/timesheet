@@ -5,7 +5,7 @@ class Domain {
 
   dynamic get id => _id;
 
-  Map<String, dynamic> toMap() {}
+  Map<String, dynamic> mapForDBInsert() {}
 
-  Map<String, dynamic> toUpdateMap() {}
+  Map<String, dynamic> mapForDBUpdate() {}
 }

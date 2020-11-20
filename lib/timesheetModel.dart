@@ -12,23 +12,19 @@ class TimeSheetModel implements Domain {
   int _id;
 
   //Constructor to pass the values taken from User
-
   TimeSheetModel(this._selectedDate, this._startTime, this._endTime, this._workDescription);
 
-  //Constructor to take values from map where Date, ST, ET, WD are columns of database table TimeSheet and assign to class variables UI-->TSmodel -->Database
-  TimeSheetModel.fromMap(Map<String, dynamic> map) {
-    print('inside fromMap: ${map["Date"]}');
-    var dt = DateTime.parse(map["Date"]);
-    print('dt: $dt');
-    this._selectedDate = dt;
-    this._startTime = fromTimeStr(map["ST"]);
-    this._endTime = fromTimeStr(map["ET"]);
+  //Constructor to take values from map where Date, ST, ET, WD are columns of database table TimeSheet and assign to class variables Database -> TSModel
+  TimeSheetModel.readDBRowAsAMap(Map<String, dynamic> map) {
+    this._selectedDate = DateTime.parse(map["Date"]);
+    this._startTime = stringToTimeOfDay(map["ST"]);
+    this._endTime = stringToTimeOfDay(map["ET"]);
     this._workDescription = map["WD"];
     this._id = map["ID"];
   }
 
   static getNullObject() {
-    return TimeSheetModel(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), "WDs");
+    return TimeSheetModel(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), "");
   }
 
   //The private variables of class can be accessed using get method
@@ -37,20 +33,24 @@ class TimeSheetModel implements Domain {
     this._selectedDate = selectedDate;
   }
 
-  String get selectedDateStr => DateFormat.yMMMMd("en_US").format(selectedDate);
+  String get selectedDateStr {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    var toFormat = (this._selectedDate == null) ? DateTime.now() : this._selectedDate;
+    return formatter.format(toFormat);
+  }
 
   TimeOfDay get startTime => _startTime;
   set startTime(TimeOfDay startTime) {
     this._startTime = startTime;
   }
 
-  String toTimeStr(TimeOfDay tod) {
+  String timeOfDayToString(TimeOfDay tod) {
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
     return DateFormat.jm().format(dt);
   }
 
-  TimeOfDay fromTimeStr(String ts) {
+  TimeOfDay stringToTimeOfDay(String ts) {
     final format = DateFormat.jm(); //"6:00 AM"
     return TimeOfDay.fromDateTime(format.parse(ts));
   }
@@ -67,10 +67,10 @@ class TimeSheetModel implements Domain {
 
   int get id => _id;
 
-  //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. Database-->TSmodel -->UI
+  //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. TSModel -> Map -> DB
   @override
-  Map<String, dynamic> toMap() {
-    var m = toUpdateMap();
+  Map<String, dynamic> mapForDBInsert() {
+    var m = mapForDBUpdate();
 
     if (_id != null) {
       m["ID"] = _id;
@@ -79,11 +79,11 @@ class TimeSheetModel implements Domain {
   }
 
   @override
-  Map<String, dynamic> toUpdateMap() {
+  Map<String, dynamic> mapForDBUpdate() {
     var updateMap = Map<String, dynamic>();
     updateMap["Date"] = selectedDateStr;
-    updateMap["ST"] = toTimeStr(startTime);
-    updateMap["ET"] = toTimeStr(endTime);
+    updateMap["ST"] = timeOfDayToString(startTime);
+    updateMap["ET"] = timeOfDayToString(endTime);
     updateMap["WD"] = workDescription;
 
     return updateMap;
