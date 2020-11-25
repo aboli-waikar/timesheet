@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-
-import 'main.dart';
+import 'timesheet.dart';
 import 'timesheetDAO.dart';
 import 'timesheetModel.dart';
 
@@ -139,11 +138,10 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
                 onPressed: () {
                   //Call database here
                   saveTimeSheet(textFormField.text);
+
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TimeSheetApp(),
-                      ));
+                      context, MaterialPageRoute(builder: (context) => TimeSheet(),)
+                  );
                 },
                 child: Text('Submit'))
           ],

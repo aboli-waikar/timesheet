@@ -11,7 +11,6 @@ class TimeSheet extends StatefulWidget {
 }
 
 class _TimeSheetState extends State<TimeSheet> {
-  @override
   var tsDAO = TimesheetDAO();
   var tsModel = TimeSheetModel.getNullObject();
 
@@ -22,6 +21,7 @@ class _TimeSheetState extends State<TimeSheet> {
     return timesheetModels.toList();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title: Text('Timesheet')),
