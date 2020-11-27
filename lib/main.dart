@@ -29,10 +29,7 @@ class _TimeSheetAppState extends State<TimeSheetApp> {
     return MaterialApp(
       title: 'TimeSheet',
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('TimeSheet'),
-          backgroundColor: Colors.blueAccent,
-        ),
+        //appBar: AppBar(title: Text('TimeSheet'), backgroundColor: Colors.blueAccent,),
         body: Center(
           child: _widgetClasses.elementAt(_selectedIndex),
         ),

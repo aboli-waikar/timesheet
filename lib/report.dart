@@ -5,8 +5,9 @@ class Report extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text("In Report"),
+    return Scaffold(
+      appBar: AppBar(title: Text("TimeSheet"),),
+      body: Text("In Report"),
     );
   }
 }

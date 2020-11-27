@@ -10,6 +10,7 @@ class TimeSheetModel implements Domain {
   TimeOfDay _endTime;
   String _workDescription;
   int _id;
+  num _numberOfhrs;
 
   //Constructor to pass the values taken from User
   TimeSheetModel(this._selectedDate, this._startTime, this._endTime, this._workDescription);
@@ -21,6 +22,7 @@ class TimeSheetModel implements Domain {
     this._endTime = stringToTimeOfDay(map["ET"]);
     this._workDescription = map["WD"];
     this._id = map["ID"];
+    this._numberOfhrs = map["HRS"];
   }
 
   static getNullObject() {
@@ -66,6 +68,7 @@ class TimeSheetModel implements Domain {
   }
 
   int get id => _id;
+  num get hrs => _numberOfhrs;
 
   //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. TSModel -> Map -> DB
   @override
@@ -74,6 +77,7 @@ class TimeSheetModel implements Domain {
 
     if (_id != null) {
       m["ID"] = _id;
+      m["HRS"] = _numberOfhrs;
     }
     return m;
   }
@@ -86,6 +90,11 @@ class TimeSheetModel implements Domain {
     updateMap["ET"] = timeOfDayToString(endTime);
     updateMap["WD"] = workDescription;
 
+    int smin = startTime.hour*60+startTime.minute;
+    int emin = endTime.hour*60+endTime.minute;
+    _numberOfhrs = (emin-smin)/60;
+
+    updateMap["HRS"] = (_numberOfhrs == 0.0) ? 0.0 : _numberOfhrs ;
     return updateMap;
   }
 }

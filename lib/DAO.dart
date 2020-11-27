@@ -61,7 +61,7 @@ class DAO<T extends Domain> {
   Future<List> getAll() async {
     var dbClient = await db;
     //var result = await dbClient.query("SELECT * FROM $tableName");
-    var result = await dbClient.query("$tableName");
+    var result = await dbClient.query("$tableName", orderBy:"$pkColumn DESC",);
     print("In DAO.getAll");
     var res = result.toList();
     //print(res);

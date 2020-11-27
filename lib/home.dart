@@ -4,8 +4,9 @@ class Home extends StatelessWidget {
   Home();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text("In Home"),
+    return Scaffold(
+      appBar: AppBar(title: Text("TimeSheet")),
+      body: Text("In Home"),
     );
   }
 }
