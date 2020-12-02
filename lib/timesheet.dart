@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:timesheet/timesheetModel.dart';
 
 import 'insertTimeSheet.dart';
+
 //import 'package:timesheet/timesheetModel.dart';
 import 'readTimeSheet.dart';
 
@@ -11,22 +13,20 @@ class TimeSheet extends StatefulWidget {
 }
 
 class _TimeSheetState extends State<TimeSheet> {
-  final tsRead = readTimeSheet();
+  final tsRead = ReadTimeSheet();
+
   @override
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title: Text('Timesheet')),
       body: tsRead,
       floatingActionButton: FloatingActionButton(
-          tooltip: 'Enter Timesheet', child: Icon(Icons.add),
+          tooltip: 'Enter Timesheet',
+          child: Icon(Icons.add),
           onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => insertTimeSheet()));
-                        }
-        ),
+            Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
+          }),
     );
   }
 }
-

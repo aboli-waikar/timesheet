@@ -7,10 +7,10 @@ void main() => runApp(TimeSheetApp());
 
 class TimeSheetApp extends StatefulWidget {
   @override
-  _TimeSheetAppState createState() => _TimeSheetAppState();
+  TimeSheetAppState createState() => TimeSheetAppState();
 }
 
-class _TimeSheetAppState extends State<TimeSheetApp> {
+class TimeSheetAppState extends State<TimeSheetApp> {
   int _selectedIndex = 0;
   List _widgetClasses = [
     Home(),
@@ -18,7 +18,7 @@ class _TimeSheetAppState extends State<TimeSheetApp> {
     Report(),
   ];
 
-  void _onTapped(int value) {
+  void onTapped(int value) {
     setState(() {
       _selectedIndex = value;
     });
@@ -40,7 +40,7 @@ class _TimeSheetAppState extends State<TimeSheetApp> {
             BottomNavigationBarItem(icon: Icon(Icons.import_export), label: 'Report'),
           ],
           currentIndex: _selectedIndex,
-          onTap: _onTapped,
+          onTap: onTapped,
         ),
       ),
     );

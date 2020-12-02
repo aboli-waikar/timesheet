@@ -2,8 +2,10 @@ import 'package:timesheet/timesheetModel.dart';
 import 'timesheetDAO.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'updateTimeSheet.dart';
+import 'insertTimeSheet.dart';
 
-class readTimeSheet extends StatelessWidget {
+class ReadTimeSheet extends StatelessWidget {
   final tsDAO = TimesheetDAO();
 
   Future<List<TimeSheetModel>> getTSData() async {
@@ -47,11 +49,11 @@ class readTimeSheet extends StatelessWidget {
                   ]),
                   subtitle: Text(snapshot.data[index].workDescription),
                   onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => updateTimeSheet(snapshot.data[index])));
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateTimeSheet(snapshot.data[index])));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index])));
+                    });
                   },
                 );
-              },
-            );
           }
         },
       ),
