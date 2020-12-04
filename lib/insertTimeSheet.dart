@@ -23,7 +23,13 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
 
   final tsRead = ReadTimeSheet();
 
-  final textFormField = TextEditingController();
+  TextEditingController textFormField;
+
+  @override
+  void initState() {
+    super.initState();
+    textFormField = TextEditingController(text: widget.tsModel.workDescription);
+  }
 
 
   Future<void> selectDate(BuildContext context) async {
@@ -60,14 +66,14 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   }
 
   void saveTimeSheet(String text) async {
+      widget.tsModel.workDescription = text;
+
+      if(widget.tsModel.id == null) {
       int savedTimeSheetId = await tsDAO.insert(widget.tsModel);
-      print('$savedTimeSheetId');
-      // if(widget.tsModel.id == 0)
-      // {}
-      // else {
-      // debugPrint('In Else: $text');
-      // await tsDAO.update(widget.tsModel);
-      //      }
+      print('$savedTimeSheetId');}
+      else
+        await tsDAO.update(widget.tsModel);
+
   }
 
 
@@ -80,6 +86,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
+
           children: [
             Row(
               children: [
@@ -122,7 +129,6 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               child: Row(
                 children: [
                   Text('Work Description:', style: TextStyle(fontWeight: FontWeight.bold),),
-
                 ],
               ),
             ),
@@ -134,11 +140,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
                 maxLines: 5,
                 autofocus: true,
                 controller: textFormField,
-                // onChanged: (newValue){
-                //   //saveTimeSheet(newValue);
-                //   debugPrint("OnChanged TextFormField.Text");
-                //   debugPrint(textFormField.text);
-                // },
+
 
               ),
             ),
