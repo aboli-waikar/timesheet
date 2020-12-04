@@ -3,6 +3,8 @@ import 'package:timesheet/readTimeSheet.dart';
 import 'package:timesheet/timesheetDAO.dart';
 import 'dart:async';
 import 'timesheetModel.dart';
+import 'home.dart';
+import 'main.dart';
 
 class InsertUpdateTimeSheet extends StatefulWidget {
   TimeSheetModel tsModel;
@@ -21,7 +23,7 @@ class InsertUpdateTimeSheet extends StatefulWidget {
 class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   var tsDAO = TimesheetDAO();
 
-  final tsRead = ReadTimeSheet();
+  final ReadTimeSheet tsRead = ReadTimeSheet();
 
   TextEditingController textFormField;
 
@@ -153,7 +155,8 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
                         //Call database here
                         saveTimeSheet(textFormField.text);
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadTimeSheet()));
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => ReadTimeSheet()));
+                        Navigator.pushNamed(context,'/');
                       },
                       child: Text('Submit'))
                 ],

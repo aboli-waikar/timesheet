@@ -2,10 +2,14 @@ import 'package:timesheet/timesheetModel.dart';
 import 'timesheetDAO.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'updateTimeSheet.dart';
 import 'insertTimeSheet.dart';
 
-class ReadTimeSheet extends StatelessWidget {
+class ReadTimeSheet extends StatefulWidget {
+  @override
+  _ReadTimeSheetState createState() => _ReadTimeSheetState();
+}
+
+class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
 
   Future<List<TimeSheetModel>> getTSData() async {
@@ -57,6 +61,12 @@ class ReadTimeSheet extends StatelessWidget {
           }
         },
       ),
+      floatingActionButton: FloatingActionButton(
+          tooltip: 'Enter Timesheet',
+          child: Icon(Icons.add),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
+          }),
     );
   }
 }
