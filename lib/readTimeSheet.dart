@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'insertTimeSheet.dart';
 
+
 class ReadTimeSheet extends StatefulWidget {
   @override
   _ReadTimeSheetState createState() => _ReadTimeSheetState();
@@ -13,6 +14,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
 
   Future<List<TimeSheetModel>> getTSData() async {
+    debugPrint("In getTSData");
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
     var timesheetModels = tsMapList.map((tsMap) => TimeSheetModel.readDBRowAsAMap(tsMap));
     return timesheetModels.toList();
@@ -53,7 +55,6 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                   ]),
                   subtitle: Text(snapshot.data[index].workDescription),
                   onTap: () {
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateTimeSheet(snapshot.data[index])));
                     Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index])));
                     });
                   },

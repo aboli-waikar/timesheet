@@ -68,6 +68,9 @@ class TimeSheetModel implements Domain {
   }
 
   int get id => _id;
+  set id(int id){
+    this._id = id;
+  }
   num get hrs => _numberOfhrs;
 
   //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. TSModel -> Map -> DB
@@ -91,8 +94,11 @@ class TimeSheetModel implements Domain {
     updateMap["WD"] = workDescription;
 
     int smin = startTime.hour*60+startTime.minute;
+    debugPrint('$smin');
     int emin = endTime.hour*60+endTime.minute;
+    debugPrint('$emin');
     _numberOfhrs = (emin-smin)/60;
+    debugPrint('$_numberOfhrs');
 
     updateMap["HRS"] = (_numberOfhrs == 0.0) ? 0.0 : _numberOfhrs ;
     return updateMap;

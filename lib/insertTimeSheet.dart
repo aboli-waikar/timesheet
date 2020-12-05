@@ -3,8 +3,7 @@ import 'package:timesheet/readTimeSheet.dart';
 import 'package:timesheet/timesheetDAO.dart';
 import 'dart:async';
 import 'timesheetModel.dart';
-import 'home.dart';
-import 'main.dart';
+
 
 class InsertUpdateTimeSheet extends StatefulWidget {
   TimeSheetModel tsModel;
@@ -27,15 +26,18 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
 
   TextEditingController textFormField;
 
+  bool isEnabled;
+
   @override
   void initState() {
     super.initState();
     textFormField = TextEditingController(text: widget.tsModel.workDescription);
+    isEnabled = (widget.tsModel.id == null) ? false : true;
   }
 
 
   Future<void> selectDate(BuildContext context) async {
-    final DateTime d = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
+    final DateTime d = await showDatePicker(context: context, initialDate: widget.tsModel.selectedDate, firstDate: DateTime(2000), lastDate: DateTime(2030));
     debugPrint('$d');
     setState(() {
       widget.tsModel.selectedDate = d;
@@ -44,7 +46,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   }
 
   Future<void> _selectStartTime(BuildContext context) async {
-    TimeOfDay t = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    TimeOfDay t = await showTimePicker(context: context, initialTime: widget.tsModel.startTime);
     debugPrint('$t');
     if (t != null) {
       setState(() {
@@ -56,7 +58,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   }
 
   Future<void> _selectEndTime(BuildContext context) async {
-    TimeOfDay t = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    TimeOfDay t = await showTimePicker(context: context, initialTime: widget.tsModel.endTime);
     debugPrint('$t');
     if (t != null) {
       setState(() {
@@ -76,8 +78,24 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
       else
         await tsDAO.update(widget.tsModel);
 
+
   }
 
+  void deleteTimeSheet(int id) async {
+    widget.tsModel.id = id;
+    await tsDAO.delete(id);
+
+  }
+ DeleteButton(){
+   var delete = ElevatedButton(
+       onPressed:  () {
+         deleteTimeSheet(widget.tsModel.id);
+         Navigator.pop(context);
+         Navigator.pushReplacementNamed(context,'/');
+       } ,
+       child: Text('Delete'));
+  return delete;
+ }
 
   @override
   Widget build(BuildContext context) {
@@ -105,13 +123,8 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
             Row(
               children: [
                 IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectStartTime(context)),
-                Text(
-                  'Start Time: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  widget.tsModel.timeOfDayToString(widget.tsModel.startTime), /*style: TextStyle(fontSize: 12,color: Colors.black, fontWeight: FontWeight.bold),*/
-                ),
+                Text('Start Time: ', style: TextStyle(fontWeight: FontWeight.bold),),
+                Text(widget.tsModel.timeOfDayToString(widget.tsModel.startTime),),
               ],
             ),
             Row(
@@ -155,10 +168,14 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
                         //Call database here
                         saveTimeSheet(textFormField.text);
                         Navigator.pop(context);
-                        //Navigator.push(context, MaterialPageRoute(builder: (context) => ReadTimeSheet()));
-                        Navigator.pushNamed(context,'/');
+                        //Use PushReplacementNamed method to go back to the root page without back arrow in Appbar.
+                        Navigator.pushReplacementNamed(context,'/');
                       },
-                      child: Text('Submit'))
+                      child: Text(isEnabled ? 'Update': 'Submit')),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: isEnabled ? DeleteButton() : null,
+                  )
                 ],
               ),
             ),
