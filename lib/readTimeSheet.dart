@@ -12,12 +12,28 @@ class ReadTimeSheet extends StatefulWidget {
 
 class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
+  List<bool> isDelete = [];
 
   Future<List<TimeSheetModel>> getTSData() async {
     debugPrint("In getTSData");
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
-    var timesheetModels = tsMapList.map((tsMap) => TimeSheetModel.readDBRowAsAMap(tsMap));
-    return timesheetModels.toList();
+    List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.readDBRowMapAsTimeSheetModel(tsRowAsMap)).toList();
+
+    for(int i = 0; i< timesheetModels.length;i++){
+      isDelete.add(false);
+    }
+    return timesheetModels;
+  }
+
+  deleteButton(int id) {
+      ElevatedButton(
+        onPressed:  () {
+          //deleteTimeSheet(widget.tsModel.id);
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context,'/');
+        } ,
+        child: Text('Delete'));
+
   }
 
   @override
@@ -34,31 +50,44 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
               ),
             );
           } else {
+
             return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: Icon(Icons.update),
-                  title: Column(children: [
-                    Row(
-                      children: [
-                        Text("Date:"),
-                        Text(snapshot.data[index].selectedDateStr),
-                      ],
+                    //leading: Icon(Icons.update),
+                    leading: Checkbox(
+                      value: isDelete[index],
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          isDelete[index] = newValue;
+                        });
+                      },
                     ),
-                    Row(
-                      children: [
-                        Text("Hours Spent:"),
-                        Text(snapshot.data[index].hrs.toString()),
-                      ],
-                    )
-                  ]),
-                  subtitle: Text(snapshot.data[index].workDescription),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index])));
-                    });
-                  },
+                    // trailing: FlatButton(
+                    //   child: Icon(Icons.update),
+                    //   onPressed: null,),
+                    title: Column(children: [
+                      Row(
+                        children: [
+                          Text("Date:"),
+                          Text(snapshot.data[index].selectedDateStr),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text("Hours Spent:"),
+                          Text(snapshot.data[index].hrs.toString()),
+                        ],
+                      )
+                    ]),
+                    subtitle: Text(snapshot.data[index].workDescription),
+                    onLongPress: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index])));
+                    }
                 );
+              },
+            );
           }
         },
       ),
