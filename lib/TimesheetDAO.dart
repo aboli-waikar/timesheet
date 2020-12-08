@@ -1,5 +1,5 @@
 import 'DAO.dart';
-import 'timesheetModel.dart';
+import 'TimesheetModel.dart';
 
 class TimesheetDAO extends DAO<TimeSheetModel> {
   final String date = "Date";

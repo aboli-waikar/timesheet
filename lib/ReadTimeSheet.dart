@@ -1,8 +1,9 @@
-import 'package:timesheet/timesheetModel.dart';
-import 'timesheetDAO.dart';
+import 'package:timesheet/TimesheetModel.dart';
+import 'TimesheetDAO.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'insertTimeSheet.dart';
+import 'InsertUpdateTimeSheet.dart';
+import 'DeleteTimeSheet.dart';
 
 
 class ReadTimeSheet extends StatefulWidget {
@@ -23,17 +24,6 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
       isDelete.add(false);
     }
     return timesheetModels;
-  }
-
-  deleteButton(int id) {
-      ElevatedButton(
-        onPressed:  () {
-          //deleteTimeSheet(widget.tsModel.id);
-          Navigator.pop(context);
-          Navigator.pushReplacementNamed(context,'/');
-        } ,
-        child: Text('Delete'));
-
   }
 
   @override
@@ -61,6 +51,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                       onChanged: (bool newValue) {
                         setState(() {
                           isDelete[index] = newValue;
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => DeleteTimeSheet(isDelete, snapshot.data[index])));
                         });
                       },
                     ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:timesheet/readTimeSheet.dart';
-import 'package:timesheet/timesheetDAO.dart';
+import 'package:timesheet/ReadTimeSheet.dart';
+import 'package:timesheet/TimesheetDAO.dart';
 import 'dart:async';
-import 'timesheetModel.dart';
+import 'TimesheetModel.dart';
 
 
 class InsertUpdateTimeSheet extends StatefulWidget {

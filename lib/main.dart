@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
-import 'report.dart';
-import 'readTimeSheet.dart';
+import 'Home.dart';
+import 'Report.dart';
+import 'ReadTimeSheet.dart';
 
 void main() => runApp(TimeSheetApp());
 
