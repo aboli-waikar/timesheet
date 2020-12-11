@@ -4,33 +4,35 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'InsertUpdateTimeSheet.dart';
 import 'DeleteTimeSheet.dart';
+import 'package:timesheet/DeleteTimeSheetViewModel.dart';
 
 
 class ReadTimeSheet extends StatefulWidget {
+
+  List<DeleteTimeSheetViewModel> listDelTSViewModel;
   @override
   _ReadTimeSheetState createState() => _ReadTimeSheetState();
 }
 
 class _ReadTimeSheetState extends State<ReadTimeSheet> {
-  final tsDAO = TimesheetDAO();
-  List<bool> isDelete = [];
 
-  Future<List<TimeSheetModel>> getTSData() async {
+  final tsDAO = TimesheetDAO();
+
+  Future<List<DeleteTimeSheetViewModel>> getTSData() async {
     debugPrint("In getTSData");
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
     List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.readDBRowMapAsTimeSheetModel(tsRowAsMap)).toList();
+    List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
 
-    for(int i = 0; i< timesheetModels.length;i++){
-      isDelete.add(false);
-    }
-    return timesheetModels;
+    //var listDelTSViewModel = widget.listDelTSViewModel;
+    return listDelTSViewModel;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("TimeSheet"),),
-      body: FutureBuilder<List<TimeSheetModel>>(
+      body: FutureBuilder<List<DeleteTimeSheetViewModel>>(
         future: getTSData(),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
@@ -47,11 +49,11 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                 return ListTile(
                     //leading: Icon(Icons.update),
                     leading: Checkbox(
-                      value: isDelete[index],
+                      value: snapshot.data[index].isDelete,
                       onChanged: (bool newValue) {
                         setState(() {
-                          isDelete[index] = newValue;
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => DeleteTimeSheet(isDelete, snapshot.data[index])));
+                          snapshot.data[index].isDelete = newValue;
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => DeleteTimeSheetList(snapshot.data)));
                         });
                       },
                     ),
@@ -62,19 +64,19 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                       Row(
                         children: [
                           Text("Date:"),
-                          Text(snapshot.data[index].selectedDateStr),
+                          Text(snapshot.data[index].tsModel.selectedDateStr),
                         ],
                       ),
                       Row(
                         children: [
                           Text("Hours Spent:"),
-                          Text(snapshot.data[index].hrs.toString()),
+                          Text(snapshot.data[index].tsModel.hrs.toString()),
                         ],
                       )
                     ]),
-                    subtitle: Text(snapshot.data[index].workDescription),
+                    subtitle: Text(snapshot.data[index].tsModel.workDescription),
                     onLongPress: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index])));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
                     }
                 );
               },

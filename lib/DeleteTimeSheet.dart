@@ -1,31 +1,44 @@
 import 'package:flutter/material.dart';
 import 'TimesheetModel.dart';
 import 'TimesheetDAO.dart';
+import 'package:timesheet/DeleteTimeSheetViewModel.dart';
 
-class DeleteTimeSheet extends StatefulWidget {
+
+class DeleteTimeSheetList extends StatefulWidget {
+
+  List<DeleteTimeSheetViewModel> listDelTSViewModel;
+
+  DeleteTimeSheetList(this.listDelTSViewModel);
+
   @override
-  _DeleteTimeSheetState createState() => _DeleteTimeSheetState();
-  List<bool> isDeleteList;
-  TimeSheetModel tsModel;
-
-  DeleteTimeSheet(this.isDeleteList, this.tsModel);
+  _DeleteTimeSheetListState createState() => _DeleteTimeSheetListState();
 }
 
-class _DeleteTimeSheetState extends State<DeleteTimeSheet> {
+class _DeleteTimeSheetListState extends State<DeleteTimeSheetList> {
+
   final tsDAO = TimesheetDAO();
 
-  Future<List<TimeSheetModel>> getTSData() async {
+  Future<List<DeleteTimeSheetViewModel>> getTSData() async {
     debugPrint("In getTSData");
-    List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
-    List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.readDBRowMapAsTimeSheetModel(tsRowAsMap)).toList();
+    // List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
+    // List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.readDBRowMapAsTimeSheetModel(tsRowAsMap)).toList();
+    //List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
 
-    return timesheetModels;
+    var listDelTSViewModel = widget.listDelTSViewModel;
+    return listDelTSViewModel;
   }
 
-
-  deleteTS(TimeSheetModel tsModel) async {
-
-    await tsDAO.delete(widget.tsModel.id);
+  deleteTS() async {
+    debugPrint ("In DeleteTS");
+    List<DeleteTimeSheetViewModel> delTSViewModel = widget.listDelTSViewModel.where((element) => element.isDelete == true).toList();
+    List<int> idsToBeDeleted = delTSViewModel.map((e) => e.tsModel.id).toList();
+    debugPrint('$idsToBeDeleted');
+    //await tsDAO.deleteMultiple(idsToBeDeleted);
+    await {
+    for(int i=0;i<=idsToBeDeleted.length-1;i++)
+    {
+    tsDAO.delete(idsToBeDeleted[i])
+    }};
   }
 
   @override
@@ -36,17 +49,13 @@ class _DeleteTimeSheetState extends State<DeleteTimeSheet> {
         actions: [
           IconButton(icon: Icon(Icons.delete),
               onPressed: (){
-              if(widget.isDeleteList == true) {
-                deleteTS(widget.tsModel);
+                deleteTS();
                 Navigator.pushReplacementNamed(context,'/').then((value) => setState((){}));
-              }
-              else
-              null;
               }
           )
         ],
       ),
-      body: FutureBuilder<List<TimeSheetModel>>(
+      body: FutureBuilder<List<DeleteTimeSheetViewModel>>(
         future: getTSData(),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
@@ -63,10 +72,10 @@ class _DeleteTimeSheetState extends State<DeleteTimeSheet> {
                 return ListTile(
                   //leading: Icon(Icons.update),
                     leading: Checkbox(
-                      value: widget.isDeleteList[index],
+                      value: snapshot.data[index].isDelete,
                       onChanged: (bool newValue) {
                         setState(() {
-                          widget.isDeleteList[index] = newValue;
+                          snapshot.data[index].isDelete = newValue;
                         });
                       },
                     ),
@@ -77,17 +86,17 @@ class _DeleteTimeSheetState extends State<DeleteTimeSheet> {
                       Row(
                         children: [
                           Text("Date:"),
-                          Text(snapshot.data[index].selectedDateStr),
+                          Text(snapshot.data[index].tsModel.selectedDateStr),
                         ],
                       ),
                       Row(
                         children: [
                           Text("Hours Spent:"),
-                          Text(snapshot.data[index].hrs.toString()),
+                          Text(snapshot.data[index].tsModel.hrs.toString()),
                         ],
                       )
                     ]),
-                    subtitle: Text(snapshot.data[index].workDescription),
+                    subtitle: Text(snapshot.data[index].tsModel.workDescription),
                   
                 );
               },

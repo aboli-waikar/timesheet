@@ -33,7 +33,7 @@ class _ListTimeSheetState extends State<ListTimeSheet> {
   Future<List<DeleteTimeSheetViewModel>> toBeDeletedList() async {
     debugPrint("In to be deleted");
     List<DeleteTimeSheetViewModel> deleteTSVMs = widget.deleteTSVMs.where((dtsvm) => dtsvm.toDelete == true);
-    await tsDAO.delete(deleteTSVMs.map((dtsvm) => dtsvm.timeSheetModel.id));
+    await tsDAO.deleteMultiple(deleteTSVMs.map((dtsvm) => dtsvm.timeSheetModel.id));
   }
 
   @override

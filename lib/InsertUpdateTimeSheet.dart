@@ -4,7 +4,6 @@ import 'package:timesheet/TimesheetDAO.dart';
 import 'dart:async';
 import 'TimesheetModel.dart';
 
-
 class InsertUpdateTimeSheet extends StatefulWidget {
   TimeSheetModel tsModel;
 
@@ -16,7 +15,6 @@ class InsertUpdateTimeSheet extends StatefulWidget {
   InsertUpdateTimeSheet(this.tsModel);
   @override
   InsertUpdateTimeSheetState createState() => InsertUpdateTimeSheetState();
-
 }
 
 class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
