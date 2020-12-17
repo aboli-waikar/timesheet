@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'TimesheetModel.dart';
+import 'package:timesheet/ReadTimeSheet.dart';
 import 'TimesheetDAO.dart';
 import 'package:timesheet/DeleteTimeSheetViewModel.dart';
 
@@ -33,12 +33,8 @@ class _DeleteTimeSheetListState extends State<DeleteTimeSheetList> {
     List<DeleteTimeSheetViewModel> delTSViewModel = widget.listDelTSViewModel.where((element) => element.isDelete == true).toList();
     List<int> idsToBeDeleted = delTSViewModel.map((e) => e.tsModel.id).toList();
     debugPrint('$idsToBeDeleted');
-    //await tsDAO.deleteMultiple(idsToBeDeleted);
-    await {
-    for(int i=0;i<=idsToBeDeleted.length-1;i++)
-    {
-    tsDAO.delete(idsToBeDeleted[i])
-    }};
+    await idsToBeDeleted.forEach((id) => tsDAO.delete(id));
+
   }
 
   @override
@@ -50,7 +46,8 @@ class _DeleteTimeSheetListState extends State<DeleteTimeSheetList> {
           IconButton(icon: Icon(Icons.delete),
               onPressed: (){
                 deleteTS();
-                Navigator.pushReplacementNamed(context,'/').then((value) => setState((){}));
+                //Navigator.pushReplacementNamed(context,'/');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ReadTimeSheet())).then((value) => setState((){}));
               }
           )
         ],

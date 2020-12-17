@@ -102,11 +102,6 @@ class DAO<T extends Domain> {
     return await dbClient.delete(tableName, where: "$pkColumn = ?", whereArgs: [id]);
   }
 
-  // Future<int> deleteMultiple(List<int> id) async {
-  //   var dbClient = await db;
-  //   return await dbClient.delete(tableName, where: "$pkColumn IN ?", whereArgs: id);
-  // }
-
   Future close() async {
     var dbClient = await db;
     return dbClient.close();
