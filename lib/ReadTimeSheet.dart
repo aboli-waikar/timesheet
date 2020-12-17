@@ -1,14 +1,13 @@
-import 'package:timesheet/TimesheetModel.dart';
-import 'TimesheetDAO.dart';
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'InsertUpdateTimeSheet.dart';
-import 'DeleteTimeSheet.dart';
+
+import 'package:flutter/material.dart';
 import 'package:timesheet/DeleteTimeSheetViewModel.dart';
+import 'package:timesheet/TimesheetModel.dart';
+
+import 'InsertUpdateTimeSheet.dart';
+import 'TimesheetDAO.dart';
 
 class ReadTimeSheet extends StatefulWidget {
-  List<DeleteTimeSheetViewModel> listDelTSViewModel;
-  DeleteTimeSheetViewModel delTSViewModel;
 
   @override
   _ReadTimeSheetState createState() => _ReadTimeSheetState();
@@ -16,34 +15,29 @@ class ReadTimeSheet extends StatefulWidget {
 
 class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
-  List<bool> isDelete = [];
-  List idsToBeDeleted=[];
+  List<DeleteTimeSheetViewModel> listDelTSViewModel;
 
-  Future<List<TimeSheetModel>> getTSData() async {
+  Future<List<DeleteTimeSheetViewModel>> getTSData() async {
     debugPrint("In getTSData");
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
     List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.readDBRowMapAsTimeSheetModel(tsRowAsMap)).toList();
+    List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
+    return listDelTSViewModel;
+  }
 
-    for (int i = 0; i<=timesheetModels.length; i++)
-      {
-        isDelete.add(false);
-      }
-
-    return timesheetModels;
+  void copyData(List<DeleteTimeSheetViewModel> initialData) {
+    if (listDelTSViewModel == null) {
+      listDelTSViewModel = initialData;
+    }
   }
 
   deleteTS() async {
     debugPrint("In DeleteTS");
-    await idsToBeDeleted.forEach((id) => tsDAO.delete(id));
+    await listDelTSViewModel.where((element) => element.isDelete).forEach((dtsvm) => tsDAO.delete(dtsvm.tsModel.id));
   }
 
-  populateDeleteList(int id) {
-    idsToBeDeleted.add(id);
-    debugPrint(idsToBeDeleted.toString());
-  }
-
-  GetAppBar() {
-    var appBar = AppBar(
+  AppBar getAppBar() {
+    var appBarWithDeleteIcon = AppBar(
       title: Text("TimeSheet"),
       actions: [
         IconButton(
@@ -51,29 +45,32 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
             onPressed: () {
               deleteTS();
               //Navigator.pop(context);
-              Navigator.pushReplacementNamed(context,'/');
+              Navigator.pushReplacementNamed(context, '/');
             })
       ],
     );
 
-    var title = AppBar(
+    var appBar = AppBar(
       title: Text("TimeSheet"),
     );
 
-    if (isDelete.any((element) => element ==true))
+    if (listDelTSViewModel != null && listDelTSViewModel.any((element) => element.isDelete == true)) {
+      return appBarWithDeleteIcon;
+    } else {
       return appBar;
-    else
-      return title;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title: Text("TimeSheet"),),
-      appBar: GetAppBar(),
-      body: FutureBuilder<List<TimeSheetModel>>(
+      appBar: getAppBar(),
+      body: FutureBuilder<List<DeleteTimeSheetViewModel>>(
         future: getTSData(),
         builder: (context, snapshot) {
+          copyData(snapshot.data);
+
           if (snapshot.data == null) {
             return Container(
               child: Center(
@@ -86,13 +83,13 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
               itemBuilder: (context, index) {
                 return ListTile(
                     leading: Checkbox(
-                      value: isDelete[index],
+                      value: listDelTSViewModel[index].isDelete,
                       onChanged: (bool newValue) {
                         setState(() {
-                          isDelete[index] = newValue;
-                          int id = snapshot.data[index].id;
+                          listDelTSViewModel[index].isDelete = newValue;
+                          debugPrint('current value: ${listDelTSViewModel[index].isDelete}');
+                          int id = snapshot.data[index].tsModel.id;
                           debugPrint('$id');
-                          populateDeleteList(id);
                         });
                       },
                     ),
@@ -100,19 +97,19 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                       Row(
                         children: [
                           Text("Date:"),
-                          Text(snapshot.data[index].selectedDateStr),
+                          Text(snapshot.data[index].tsModel.selectedDateStr),
                         ],
                       ),
                       Row(
                         children: [
                           Text("Hours Spent:"),
-                          Text(snapshot.data[index].hrs.toString()),
+                          Text(snapshot.data[index].tsModel.hrs.toString()),
                         ],
                       )
                     ]),
-                    subtitle: Text(snapshot.data[index].workDescription),
+                    subtitle: Text(snapshot.data[index].tsModel.workDescription),
                     onLongPress: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index])));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
                     });
               },
             );
