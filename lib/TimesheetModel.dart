@@ -16,7 +16,7 @@ class TimeSheetModel implements Domain {
   TimeSheetModel(this._selectedDate, this._startTime, this._endTime, this._workDescription);
 
   //Constructor to take values from map where Date, ST, ET, WD are columns of database table TimeSheet and assign to class variables Database -> TSModel
-  TimeSheetModel.readDBRowMapAsTimeSheetModel(Map<String, dynamic> map) {
+  TimeSheetModel.convertToTimeSheetModel(Map<String, dynamic> map) {
     this._selectedDate = DateTime.parse(map["Date"]);
     this._startTime = stringToTimeOfDay(map["ST"]);
     this._endTime = stringToTimeOfDay(map["ET"]);

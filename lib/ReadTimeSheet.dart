@@ -20,7 +20,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
   Future<List<DeleteTimeSheetViewModel>> getTSData() async {
     debugPrint("In getTSData");
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
-    List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.readDBRowMapAsTimeSheetModel(tsRowAsMap)).toList();
+    List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
     List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
     return listDelTSViewModel;
   }

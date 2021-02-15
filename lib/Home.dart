@@ -1,12 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'TimesheetBarChart.dart';
 
 class Home extends StatelessWidget {
-  Home();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("TimeSheet")),
-      body: Text("In Home"),
+      appBar: AppBar(
+        title: Text("TimeSheet"),
+      ),
+      body: TimesheetBarChart(),
     );
   }
 }
+

@@ -7,7 +7,15 @@ class Report extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("TimeSheet"),),
-      body: Text("In Report"),
+      body: Center(child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(child: Text("In Report"), color: Colors.green, height: 200,
+              width: MediaQuery.of(context).size.width/2 ),
+          Container(child: Text("In Report"), color: Colors.blue, height: 200,
+              width: MediaQuery.of(context).size.width/2),
+        ],
+      )),
     );
   }
 }
