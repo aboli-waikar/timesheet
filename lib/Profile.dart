@@ -10,8 +10,7 @@ class Profile extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Text("Hello"),
-            Image.asset("images/profile.png"),
+            Container(child: Image.asset('images/profile.png', ), height: 150, width: 150,),
           ],
         ),
       ),

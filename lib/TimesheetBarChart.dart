@@ -45,7 +45,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
 
   void getTSData() async {
     final tsDAO = TimesheetDAO();
-    List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
+    List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
     var tsModels = tsMapList.map((e) => TimeSheetModel.convertToTimeSheetModel(e)).toList();
     debugPrint(tsModels.join(", "));
 
