@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Home.dart';
-import 'Report.dart';
+import 'Profile.dart';
 import 'ReadTimeSheet.dart';
 
 void main() => runApp(TimeSheetApp());
@@ -15,7 +15,7 @@ class TimeSheetAppState extends State<TimeSheetApp> {
   List _widgetClasses = [
     Home(),
     ReadTimeSheet(),
-    Report(),
+    Profile(),
   ];
 
   //forTimeSheet(this._selectedIndex);
@@ -39,7 +39,7 @@ class TimeSheetAppState extends State<TimeSheetApp> {
           items: [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(icon: Icon(Icons.update), label: 'TimeSheet'),
-            BottomNavigationBarItem(icon: Icon(Icons.import_export), label: 'Report'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
           currentIndex: _selectedIndex,
           onTap: onTapped,

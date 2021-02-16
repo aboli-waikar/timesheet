@@ -35,6 +35,14 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     debugPrint("In DeleteTS");
     await listDelTSViewModel.where((element) => element.isDelete).forEach((dtsvm) => tsDAO.delete(dtsvm.tsModel.id));
   }
+  
+  selectAll() {
+    setState(() {
+      listDelTSViewModel.forEach((e) => e.isDelete = true);
+      debugPrint(listDelTSViewModel.join(", "));
+      debugPrint("InSet");
+    });
+  }
 
   AppBar getAppBar() {
     var appBarWithDeleteIcon = AppBar(
@@ -46,7 +54,11 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
               deleteTS();
               //Navigator.pop(context);
               Navigator.pushReplacementNamed(context, '/');
-            })
+            }),
+        IconButton(
+          icon: Icon(Icons.select_all_rounded),
+          onPressed: () => selectAll(),
+        ),
       ],
     );
 
@@ -108,7 +120,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                       )
                     ]),
                     subtitle: Text(snapshot.data[index].tsModel.workDescription),
-                    onLongPress: () {
+                    onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
                     });
               },

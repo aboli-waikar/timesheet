@@ -25,8 +25,9 @@ dependencies:
     sdk: flutter
   sqflite: '>=0.8.5'
   path_provider: any
-  intl: "^0.15.6"
+  intl: "^0.16.1"
   charts_flutter: ^0.9.0
+  month_picker_dialog: ^0.3.3
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -49,7 +50,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+assets:
+  - images/profile.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

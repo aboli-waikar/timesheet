@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'ChartModel.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 import 'TimesheetDAO.dart';
@@ -6,12 +7,15 @@ import 'TimesheetModel.dart';
 import 'package:intl/intl.dart';
 
 class TimesheetBarChart extends StatefulWidget {
+  TimesheetBarChart();
+
   @override
   _TimesheetBarChartState createState() => _TimesheetBarChartState();
 }
 
 class _TimesheetBarChartState extends State<TimesheetBarChart> {
   List<ChartModel> _myData = [ChartModel(DateTime.now(), 0)];
+  DateTime selectedMonth = DateTime.now();
 
   @override
   void initState() {
@@ -19,32 +23,37 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
     getTSData();
   }
 
+  setMonth(value) {
+    setState(() {
+      selectedMonth = value;
+      debugPrint(selectedMonth.toString());
+      getTSData();
+    });
+  }
+
   getMonth(DateTime dT) {
     final DateFormat formatter = DateFormat('yyyy-MM');
-    var YearMonth = formatter.format(dT);
-    return YearMonth;
+    var yearMonth = formatter.format(dT);
+    return yearMonth;
   }
 
   getMonthStr(DateTime dT) {
     final DateFormat formatter = DateFormat('MMM-yyyy');
-    var YearMonth = formatter.format(dT);
-    return YearMonth;
+    var yearMonth = formatter.format(dT);
+    return yearMonth;
   }
-
 
   void getTSData() async {
     final tsDAO = TimesheetDAO();
-
     List tsMapList = await tsDAO.getAll(); //store data retrieved from db to a variable
     var tsModels = tsMapList.map((e) => TimeSheetModel.convertToTimeSheetModel(e)).toList();
-
     debugPrint(tsModels.join(", "));
 
     setState(() {
-      _myData = tsModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(DateTime.now())).map((tsModel) {
-        final DateTime Date = tsModel.selectedDate;
-        final double Hrs = tsModel.hrs;
-        return ChartModel(Date, Hrs);
+      _myData = tsModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(selectedMonth)).map((tsModel) {
+        final DateTime date = tsModel.selectedDate;
+        final double hrs = tsModel.hrs;
+        return ChartModel(date, hrs);
       }).toList();
     });
     debugPrint(_myData.join(", ").toString());
@@ -60,8 +69,9 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
         data: _myData,
       ),
     ];
-    var currentMonth = getMonthStr(DateTime.now());
-    var totalHrs = _myData.fold(0, (prev, ChartModel element) => prev + element.Hrs);
+    var currentMonth = getMonthStr(selectedMonth);
+    var tHrs = _myData.fold(0, (prev, ChartModel element) => prev + element.Hrs);
+    var totalHrs = tHrs.toStringAsFixed(2);
     return ListView(
       children: [
         Container(
@@ -75,7 +85,11 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Center(child: Text("Total hours for $currentMonth: $totalHrs", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),)),
+          child: Center(
+              child: Text(
+            "Work hours $currentMonth: $totalHrs",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          )),
         ),
       ],
     );
@@ -83,6 +97,19 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: getTSChart());
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Dashboard"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.calendar_today, color: Colors.white),
+              onPressed: () {
+                showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030))
+                    .then((value) => setMonth(value));
+              },
+            )
+          ],
+        ),
+        body: getTSChart());
   }
 }

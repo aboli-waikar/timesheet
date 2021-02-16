@@ -108,7 +108,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
           children: [
             Row(
               children: [
-                IconButton(icon: Icon(Icons.calendar_today), tooltip: 'Pick a date', onPressed: () => selectDate(context)),
+                IconButton(icon: Icon(Icons.calendar_today, color: Colors.blueAccent,), tooltip: 'Pick a date', onPressed: () => selectDate(context)),
                 Text(
                   'Date: ',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -120,16 +120,16 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
             ),
             Row(
               children: [
-                IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectStartTime(context)),
+                IconButton(icon: Icon(Icons.access_time, color: Colors.blueAccent), tooltip: 'Pick a Start time', onPressed: () => _selectStartTime(context)),
                 Text('Start Time: ', style: TextStyle(fontWeight: FontWeight.bold),),
                 Text(widget.tsModel.timeOfDayToString(widget.tsModel.startTime),),
               ],
             ),
             Row(
               children: [
-                IconButton(icon: Icon(Icons.access_time), tooltip: 'Pick a Start time', onPressed: () => _selectEndTime(context)),
+                IconButton(icon: Icon(Icons.access_time, color: Colors.blueAccent), tooltip: 'Pick a Start time', onPressed: () => _selectEndTime(context)),
                 Text(
-                  'End Time:',
+                  'End Time: ',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -146,13 +146,14 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(14.0, 8, 0, 0),
+              padding: const EdgeInsets.fromLTRB(14.0, 8, 14.0, 0),
               child: TextFormField(
 
                 maxLength: 300,
                 maxLines: 5,
                 autofocus: true,
                 controller: textFormField,
+                decoration: InputDecoration(border: OutlineInputBorder()),
 
 
               ),

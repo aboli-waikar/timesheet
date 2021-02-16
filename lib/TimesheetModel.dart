@@ -94,10 +94,9 @@ class TimeSheetModel implements Domain {
     updateMap["WD"] = workDescription;
 
     int smin = startTime.hour*60+startTime.minute;
-    debugPrint('$smin');
     int emin = endTime.hour*60+endTime.minute;
-    debugPrint('$emin');
-    _numberOfhrs = (emin-smin)/60;
+    var diffmin = (emin-smin)/60;
+    _numberOfhrs = diffmin.toInt() + ((emin-smin)%60)/100 ;
     debugPrint('$_numberOfhrs');
 
     updateMap["HRS"] = (_numberOfhrs == 0.0) ? 0.0 : _numberOfhrs ;

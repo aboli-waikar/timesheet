@@ -9,4 +9,9 @@ class DeleteTimeSheetViewModel {
   static getNullObject() {
     return DeleteTimeSheetViewModel(TimeSheetModel.getNullObject(), false);
   }
+
+  @override
+  String toString() {
+    return "DeleteTimeSheetViewModel($isDelete)";
+  }
 }
