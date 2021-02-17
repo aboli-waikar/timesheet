@@ -99,18 +99,23 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Dashboard"),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.calendar_today, color: Colors.white),
-              onPressed: () {
-                showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030))
-                    .then((value) => setMonth(value));
-              },
-            )
-          ],
-        ),
-        body: getTSChart());
+        // appBar: AppBar(
+        //   title: Text("Dashboard"),
+        //   actions: [
+        //     IconButton(
+        //       icon: Icon(Icons.calendar_today, color: Colors.white),
+        //       onPressed: () {
+        //         showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030))
+        //             .then((value) => setMonth(value));
+        //       },
+        //     )
+        //   ],
+        // ),
+        body: Container(
+            color: Theme.of(context).colorScheme.background,
+            padding: MediaQuery.of(context).padding,
+            child: getTSChart()
+        )
+    );
   }
 }

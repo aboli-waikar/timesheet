@@ -11,6 +11,7 @@ class TimeSheetModel implements Domain {
   String _workDescription;
   int _id;
   num _numberOfhrs;
+  String _project;
 
   //Constructor to pass the values taken from User
   TimeSheetModel(this._selectedDate, this._startTime, this._endTime, this._workDescription);
@@ -23,6 +24,7 @@ class TimeSheetModel implements Domain {
     this._workDescription = map["WD"];
     this._id = map["ID"];
     this._numberOfhrs = map["HRS"];
+    this._project = map["PR"];
   }
 
   static getNullObject() {
@@ -73,6 +75,8 @@ class TimeSheetModel implements Domain {
   }
   num get hrs => _numberOfhrs;
 
+  String get project => _project;
+
   //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. TSModel -> Map -> DB
   @override
   Map<String, dynamic> mapForDBInsert() {
@@ -92,6 +96,7 @@ class TimeSheetModel implements Domain {
     updateMap["ST"] = timeOfDayToString(startTime);
     updateMap["ET"] = timeOfDayToString(endTime);
     updateMap["WD"] = workDescription;
+    updateMap["PR"] = project;
 
     int smin = startTime.hour*60+startTime.minute;
     int emin = endTime.hour*60+endTime.minute;

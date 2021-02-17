@@ -7,6 +7,7 @@ class TimesheetDAO extends DAO<TimeSheetModel> {
   final String et = "ET";
   final String wd = "WD";
   final String hrs = "HRS";
+  final String project = "PR";
 
   @override
   String tableName = "TimeSheetTbl";
@@ -16,5 +17,5 @@ class TimesheetDAO extends DAO<TimeSheetModel> {
 
   @override
   String get colNamesWithDbTypes =>
-      "$date TEXT, $st TEXT, $et TEXT, $wd TEXT, $hrs INT";
+      "$date TEXT, $st TEXT, $et TEXT, $wd TEXT, $hrs INT, $project PR";
 }

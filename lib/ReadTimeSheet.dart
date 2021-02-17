@@ -44,6 +44,18 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     });
   }
 
+  projectDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Change Project"),
+          //content:
+        );
+      },
+    );
+  }
+
   AppBar getAppBar() {
     var appBarWithDeleteIcon = AppBar(
       title: Text("TimeSheet"),
@@ -63,7 +75,10 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     );
 
     var appBar = AppBar(
-      title: Text("TimeSheet"),
+      title: Text("Project: ABC", style: TextStyle(fontSize: 16.0),),
+      actions: [
+        IconButton(icon: Icon(Icons.work_outline, color: Colors.white,), onPressed: () => projectDialog(),)
+      ],
     );
 
     if (listDelTSViewModel != null && listDelTSViewModel.any((element) => element.isDelete == true)) {
@@ -108,18 +123,18 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                     title: Column(children: [
                       Row(
                         children: [
-                          Text("Date:"),
-                          Text(snapshot.data[index].tsModel.selectedDateStr),
+                          Text("Date: ", style: TextStyle(fontSize: 13.0)),
+                          Text(snapshot.data[index].tsModel.selectedDateStr, style: TextStyle(fontSize: 13.0)),
                         ],
                       ),
                       Row(
                         children: [
-                          Text("Hours Spent:"),
-                          Text(snapshot.data[index].tsModel.hrs.toString()),
+                          Text("Hours Spent: ", style: TextStyle(fontSize: 12.0)),
+                          Text(snapshot.data[index].tsModel.hrs.toString(),style: TextStyle(fontSize: 14.0, color: Colors.blue, fontWeight: FontWeight.bold) ),
                         ],
                       )
                     ]),
-                    subtitle: Text(snapshot.data[index].tsModel.workDescription),
+                    subtitle: Text(snapshot.data[index].tsModel.workDescription, style: TextStyle(fontSize: 14.0, color: Colors.blue)),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
                     });
