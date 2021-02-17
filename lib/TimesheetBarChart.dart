@@ -79,8 +79,9 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
           child: Charts.TimeSeriesChart(
             seriesList,
             animate: true,
-            defaultRenderer: Charts.BarRendererConfig<DateTime>(),
+            defaultRenderer: Charts.BarRendererConfig<DateTime>(groupingType: Charts.BarGroupingType.stacked),
             domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
+
           ),
         ),
         Padding(
