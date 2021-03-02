@@ -7,28 +7,19 @@ import 'TimesheetModel.dart';
 import 'package:intl/intl.dart';
 
 class TimesheetBarChart extends StatefulWidget {
-  TimesheetBarChart();
-
   @override
   _TimesheetBarChartState createState() => _TimesheetBarChartState();
 }
 
 class _TimesheetBarChartState extends State<TimesheetBarChart> {
   List<ChartModel> _myData = [ChartModel(DateTime.now(), 0)];
-  DateTime selectedMonth = DateTime.now();
+  var selectedMonth = DateTime.now();
+  List<String> projectList = ['P1','P2'];
 
   @override
   void initState() {
     super.initState();
     getTSData();
-  }
-
-  setMonth(value) {
-    setState(() {
-      selectedMonth = value;
-      debugPrint(selectedMonth.toString());
-      getTSData();
-    });
   }
 
   getMonth(DateTime dT) {
@@ -43,13 +34,23 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
     return yearMonth;
   }
 
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
+    setState(() {
+      selectedMonth = d;
+      return getTSData();
+    });
+  }
+
   void getTSData() async {
     final tsDAO = TimesheetDAO();
     List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
     var tsModels = tsMapList.map((e) => TimeSheetModel.convertToTimeSheetModel(e)).toList();
-    debugPrint(tsModels.join(", "));
+    debugPrint(tsModels.join(", ").toString());
 
     setState(() {
+      debugPrint("TSBarChart-SetState");
+      debugPrint(selectedMonth.toString());
       _myData = tsModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(selectedMonth)).map((tsModel) {
         final DateTime date = tsModel.selectedDate;
         final double hrs = tsModel.hrs;
@@ -69,6 +70,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
         data: _myData,
       ),
     ];
+
     var currentMonth = getMonthStr(selectedMonth);
     var tHrs = _myData.fold(0, (prev, ChartModel element) => prev + element.Hrs);
     var totalHrs = tHrs.toStringAsFixed(2);
@@ -81,16 +83,15 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
             animate: true,
             defaultRenderer: Charts.BarRendererConfig<DateTime>(groupingType: Charts.BarGroupingType.stacked),
             domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
-
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Center(
               child: Text(
-            "Work hours $currentMonth: $totalHrs",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-          )),
+                "$currentMonth: $totalHrs hours",
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12),
+              )),
         ),
       ],
     );
@@ -99,23 +100,44 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Text("Dashboard"),
-        //   actions: [
-        //     IconButton(
-        //       icon: Icon(Icons.calendar_today, color: Colors.white),
-        //       onPressed: () {
-        //         showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030))
-        //             .then((value) => setMonth(value));
-        //       },
-        //     )
-        //   ],
-        // ),
-        body: Container(
-            color: Theme.of(context).colorScheme.background,
-            padding: MediaQuery.of(context).padding,
-            child: getTSChart()
-        )
-    );
+        appBar: AppBar(
+          title: Text("Dashboard"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.calendar_today, color: Colors.white),
+              onPressed: () => selectDate(context),
+            ),
+          ],
+        ),
+        body: ListView(scrollDirection: Axis.vertical, shrinkWrap: false, children: [
+          Container(
+            height: 229,
+            child: ListView.builder(
+              shrinkWrap: false,
+              scrollDirection: Axis.horizontal,
+              itemCount: projectList.length,
+              itemBuilder: (context, index) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(children: [
+                      Text('${projectList[index]}'),
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(20.0),
+                          child: Container(
+                              color: Theme.of(context).colorScheme.background,
+                              padding: MediaQuery.of(context).padding,
+                              child: getTSChart(),
+                              height: 185,
+                              width: 200))
+                    ]),
+                  ),
+                );
+              },
+            ),
+          ),
+
+        ]));
   }
 }
