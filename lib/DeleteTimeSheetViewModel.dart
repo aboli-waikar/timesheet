@@ -12,6 +12,6 @@ class DeleteTimeSheetViewModel {
 
   @override
   String toString() {
-    return "DeleteTimeSheetViewModel($isDelete)";
+    return "DeleteTimeSheetViewModel(${tsModel.toString()},$isDelete)";
   }
 }

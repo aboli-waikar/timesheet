@@ -101,7 +101,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Dashboard"),
+          title: Text("Dashboard",style: TextStyle(fontSize: 16.0),),
           actions: [
             IconButton(
               icon: Icon(Icons.calendar_today, color: Colors.white),
@@ -109,35 +109,26 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
             ),
           ],
         ),
-        body: ListView(scrollDirection: Axis.vertical, shrinkWrap: false, children: [
-          Container(
-            height: 229,
-            child: ListView.builder(
-              shrinkWrap: false,
-              scrollDirection: Axis.horizontal,
-              itemCount: projectList.length,
-              itemBuilder: (context, index) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(children: [
-                      Text('${projectList[index]}'),
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(20.0),
-                          child: Container(
-                              color: Theme.of(context).colorScheme.background,
-                              padding: MediaQuery.of(context).padding,
-                              child: getTSChart(),
-                              height: 185,
-                              width: 200))
-                    ]),
-                  ),
-                );
-              },
-            ),
-          ),
-
-        ]));
+        body: ListView.builder(
+          shrinkWrap: false,
+          scrollDirection: Axis.horizontal,
+          itemCount: projectList.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(children: [
+                Text('${projectList[index]}'),
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(5.0),
+                    child: Container(
+                        color: Theme.of(context).colorScheme.background,
+                        padding: MediaQuery.of(context).padding,
+                        child: getTSChart(),
+                        height: 185,
+                        width: 200))
+              ]),
+            );
+          },
+        ));
   }
 }

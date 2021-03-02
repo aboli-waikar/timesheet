@@ -1,14 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:timesheet/DeleteTimeSheetViewModel.dart';
 import 'package:timesheet/TimesheetModel.dart';
-
+import 'ExportToExcel.dart';
+import 'Home.dart';
 import 'InsertUpdateTimeSheet.dart';
+import 'Profile.dart';
 import 'TimesheetDAO.dart';
 
 class ReadTimeSheet extends StatefulWidget {
-
   @override
   _ReadTimeSheetState createState() => _ReadTimeSheetState();
 }
@@ -16,11 +16,12 @@ class ReadTimeSheet extends StatefulWidget {
 class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
   List<DeleteTimeSheetViewModel> listDelTSViewModel;
+  List<TimeSheetModel> timesheetModels;
 
   Future<List<DeleteTimeSheetViewModel>> getTSData() async {
     debugPrint("In getTSData");
     List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-    List<TimeSheetModel> timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
+    timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
     List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
     return listDelTSViewModel;
   }
@@ -35,7 +36,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     debugPrint("In DeleteTS");
     await listDelTSViewModel.where((element) => element.isDelete).forEach((dtsvm) => tsDAO.delete(dtsvm.tsModel.id));
   }
-  
+
   selectAll() {
     setState(() {
       listDelTSViewModel.forEach((e) => e.isDelete = true);
@@ -56,15 +57,47 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     );
   }
 
+  showExportProgressDialog(){
+    showDialog(barrierDismissible: false,
+      context: context,
+      builder:(BuildContext context){
+        return AlertDialog(
+          content: new Row(
+            children: [
+              CircularProgressIndicator(),
+              Container(margin: EdgeInsets.only(left: 20),child:Text("Exporting to excel.." )),
+            ],),
+        );
+      },
+    );
+  }
+
+  showExportCompleteDialog(){
+    showDialog(barrierDismissible: false,
+      context:context,
+      builder:(BuildContext context){
+        return AlertDialog(
+          content: new Row(
+            children: [
+              CircularProgressIndicator(value: 100,),
+              Container(margin: EdgeInsets.only(left: 20),child:Text("Export completed" )),
+            ],),
+        );
+      },
+    );
+  }
+
   AppBar getAppBar() {
     var appBarWithDeleteIcon = AppBar(
-      title: Text("TimeSheet"),
+      title: Text(
+        "Project: ABC",
+        style: TextStyle(fontSize: 16.0),
+      ),
       actions: [
         IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
               deleteTS();
-              //Navigator.pop(context);
               Navigator.pushReplacementNamed(context, '/');
             }),
         IconButton(
@@ -75,9 +108,28 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     );
 
     var appBar = AppBar(
-      title: Text("Project: ABC", style: TextStyle(fontSize: 16.0),),
+      title: Text(
+        "Project: ABC",
+        style: TextStyle(fontSize: 16.0),
+      ),
       actions: [
-        IconButton(icon: Icon(Icons.work_outline, color: Colors.white,), onPressed: () => projectDialog(),)
+        IconButton(
+            icon: Icon(
+              Icons.import_export_sharp,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              var x = await ExportToExcel(); //Send Project name here
+              debugPrint("X is ${x.toString()}"); //get filename here
+              (x!=null) ? showExportCompleteDialog() : showExportProgressDialog();
+            }),
+        IconButton(
+          icon: Icon(
+            Icons.work_outline,
+            color: Colors.white,
+          ),
+          onPressed: () => projectDialog(),
+        )
       ],
     );
 
@@ -130,7 +182,8 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                       Row(
                         children: [
                           Text("Hours Spent: ", style: TextStyle(fontSize: 12.0)),
-                          Text(snapshot.data[index].tsModel.hrs.toString(),style: TextStyle(fontSize: 14.0, color: Colors.blue, fontWeight: FontWeight.bold) ),
+                          Text(snapshot.data[index].tsModel.hrs.toString(),
+                              style: TextStyle(fontSize: 14.0, color: Colors.blue, fontWeight: FontWeight.bold)),
                         ],
                       )
                     ]),

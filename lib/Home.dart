@@ -7,8 +7,17 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(title: Text("Dashboard"),),
-      body: TimesheetBarChart()
+      appBar: AppBar(toolbarHeight: 0.0,),
+      body: ListView(
+        children: [
+          Container(
+            height: 280,
+            child: TimesheetBarChart()
+        ),
+          Text("Hello")
+
+        ]
+      )
     );
   }
 }
