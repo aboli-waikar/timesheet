@@ -60,9 +60,7 @@ class DAO<T extends Domain> {
   /// This method is getItems method.
   Future<List> getAll(String sortColumn) async {
     var dbClient = await db;
-    //var result = await dbClient.query("SELECT * FROM $tableName");
     var result = await dbClient.query("$tableName", orderBy:"$sortColumn DESC",);
-    print("In DAO.getAll");
     var res = result.toList();
     //print(res);
     return res;

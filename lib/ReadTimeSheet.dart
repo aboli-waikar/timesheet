@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:timesheet/DeleteTimeSheetViewModel.dart';
 import 'package:timesheet/TimesheetModel.dart';
 import 'ExportToExcel.dart';
-import 'Home.dart';
 import 'InsertUpdateTimeSheet.dart';
-import 'Profile.dart';
 import 'TimesheetDAO.dart';
 
 class ReadTimeSheet extends StatefulWidget {
@@ -19,7 +17,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
   List<TimeSheetModel> timesheetModels;
 
   Future<List<DeleteTimeSheetViewModel>> getTSData() async {
-    debugPrint("In getTSData");
+
     List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
     timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
     List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
@@ -33,15 +31,13 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
   }
 
   deleteTS() async {
-    debugPrint("In DeleteTS");
     await listDelTSViewModel.where((element) => element.isDelete).forEach((dtsvm) => tsDAO.delete(dtsvm.tsModel.id));
   }
 
   selectAll() {
     setState(() {
       listDelTSViewModel.forEach((e) => e.isDelete = true);
-      debugPrint(listDelTSViewModel.join(", "));
-      debugPrint("InSet");
+      //debugPrint(listDelTSViewModel.join(", "));
     });
   }
 
@@ -65,7 +61,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
           content: new Row(
             children: [
               CircularProgressIndicator(),
-              Container(margin: EdgeInsets.only(left: 20),child:Text("Exporting to excel.." )),
+              Container(margin: EdgeInsets.only(left: 10),child:Text("Exporting to excel.." )),
             ],),
         );
       },
@@ -79,8 +75,8 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
         return AlertDialog(
           content: new Row(
             children: [
-              CircularProgressIndicator(value: 100,),
-              Container(margin: EdgeInsets.only(left: 20),child:Text("Export completed" )),
+              CircularProgressIndicator(value: 100.0,),
+              Container(margin: EdgeInsets.only(left: 10),child:Text("Export completed" )),
             ],),
         );
       },
@@ -120,7 +116,7 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
             ),
             onPressed: () async {
               var x = await ExportToExcel(); //Send Project name here
-              debugPrint("X is ${x.toString()}"); //get filename here
+              //debugPrint("X is ${x.toString()}"); //get filename here
               (x!=null) ? showExportCompleteDialog() : showExportProgressDialog();
             }),
         IconButton(

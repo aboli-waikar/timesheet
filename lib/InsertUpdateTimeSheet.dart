@@ -18,7 +18,7 @@ class InsertUpdateTimeSheet extends StatefulWidget {
 }
 
 class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
-  var tsDAO = TimesheetDAO();
+  final tsDAO = TimesheetDAO();
 
   final ReadTimeSheet tsRead = ReadTimeSheet();
 

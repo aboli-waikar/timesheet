@@ -12,9 +12,10 @@ class TimesheetBarChart extends StatefulWidget {
 }
 
 class _TimesheetBarChartState extends State<TimesheetBarChart> {
+  var chModel = ChartModel(DateTime.now(), 0);
   List<ChartModel> _myData = [ChartModel(DateTime.now(), 0)];
   var selectedMonth = DateTime.now();
-  List<String> projectList = ['P1','P2'];
+  List<String> projectList = ['P1', 'P2'];
 
   @override
   void initState() {
@@ -38,42 +39,42 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
     final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
     setState(() {
       selectedMonth = d;
-      return getTSData();
+      getTSData();
     });
   }
 
-  void getTSData() async {
+  Future getTSData() async {
     final tsDAO = TimesheetDAO();
     List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
     var tsModels = tsMapList.map((e) => TimeSheetModel.convertToTimeSheetModel(e)).toList();
-    debugPrint(tsModels.join(", ").toString());
+    //debugPrint(tsModels.join(", ").toString());
 
     setState(() {
-      debugPrint("TSBarChart-SetState");
-      debugPrint(selectedMonth.toString());
+      //debugPrint(selectedMonth.toString());
       _myData = tsModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(selectedMonth)).map((tsModel) {
         final DateTime date = tsModel.selectedDate;
-        final double hrs = tsModel.hrs;
+        var hrs = tsModel.hrs;
         return ChartModel(date, hrs);
       }).toList();
     });
-    debugPrint(_myData.join(", ").toString());
+    //debugPrint(_myData.join(", ").toString());
   }
 
   Widget getTSChart() {
     final List<Charts.Series<ChartModel, DateTime>> seriesList = [
       Charts.Series<ChartModel, DateTime>(
         id: 'chart000',
-        domainFn: (ChartModel chartData, _) => chartData.Date,
-        measureFn: (ChartModel chartData, _) => chartData.Hrs,
+        domainFn: (ChartModel chartData, _) => chartData.date,
+        measureFn: (ChartModel chartData, _) => chartData.hrs,
         colorFn: (ChartModel chartData, _) => Charts.MaterialPalette.deepOrange.shadeDefault,
         data: _myData,
       ),
     ];
 
     var currentMonth = getMonthStr(selectedMonth);
-    var tHrs = _myData.fold(0, (prev, ChartModel element) => prev + element.Hrs);
-    var totalHrs = tHrs.toStringAsFixed(2);
+    var tMin = _myData.fold(0, (prev, ChartModel element) => prev + element.getMins());
+    var totalHrs = chModel.getHrsMin(tMin);
+
     return ListView(
       children: [
         Container(
@@ -89,9 +90,9 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
           padding: const EdgeInsets.all(8.0),
           child: Center(
               child: Text(
-                "$currentMonth: $totalHrs hours",
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12),
-              )),
+            "$currentMonth: $totalHrs hours",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12),
+          )),
         ),
       ],
     );
@@ -101,7 +102,10 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Dashboard",style: TextStyle(fontSize: 16.0),),
+          title: Text(
+            "Dashboard",
+            style: TextStyle(fontSize: 16.0),
+          ),
           actions: [
             IconButton(
               icon: Icon(Icons.calendar_today, color: Colors.white),
