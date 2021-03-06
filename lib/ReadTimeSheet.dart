@@ -115,8 +115,8 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
               color: Colors.white,
             ),
             onPressed: () async {
-              var x = await ExportToExcel(); //Send Project name here
-              //debugPrint("X is ${x.toString()}"); //get filename here
+              var x = await ExportToExcel(timesheetModels); //Send Project name here
+              //debugPrint(x); //get filename here
               (x!=null) ? showExportCompleteDialog() : showExportProgressDialog();
             }),
         IconButton(
