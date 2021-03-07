@@ -5,6 +5,8 @@ import 'package:timesheet/TimesheetModel.dart';
 import 'ExportToExcel.dart';
 import 'InsertUpdateTimeSheet.dart';
 import 'TimesheetDAO.dart';
+import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class ReadTimeSheet extends StatefulWidget {
   @override
@@ -15,13 +17,28 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
   List<DeleteTimeSheetViewModel> listDelTSViewModel;
   List<TimeSheetModel> timesheetModels;
+  //var selectedMonth = DateTime.now();
+  var selectedMonth;
 
   Future<List<DeleteTimeSheetViewModel>> getTSData() async {
 
-    List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-    timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
-    List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
-    return listDelTSViewModel;
+    debugPrint(selectedMonth.toString());
+    if(selectedMonth == null)
+    {
+      List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
+      timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
+      List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
+      return listDelTSViewModel;
+    }
+    else
+    {
+      List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
+      List tsModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
+      timesheetModels = tsModels.where((element) => getMonth(element.selectedDate) == getMonth(selectedMonth)).toList();
+      List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
+      return listDelTSViewModel;
+    }
+
   }
 
   void copyData(List<DeleteTimeSheetViewModel> initialData) {
@@ -53,31 +70,57 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     );
   }
 
-  showExportProgressDialog(){
-    showDialog(barrierDismissible: false,
+  getMonth(DateTime dT) {
+    final DateFormat formatter = DateFormat('yyyy-MM');
+    var yearMonth = formatter.format(dT);
+    return yearMonth;
+  }
+
+  getMonthStr(DateTime dT) {
+    final DateFormat formatter = DateFormat('MMM-yyyy');
+    var yearMonth = formatter.format(dT);
+    return yearMonth;
+  }
+
+  Future<void> selectMonth(BuildContext context) async {
+    final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
+    setState(() {
+      selectedMonth = d;
+      getTSData();
+    });
+  }
+
+  showExportProgressDialog() {
+    showDialog(
+      barrierDismissible: false,
       context: context,
-      builder:(BuildContext context){
+      builder: (BuildContext context) {
         return AlertDialog(
           content: new Row(
             children: [
               CircularProgressIndicator(),
-              Container(margin: EdgeInsets.only(left: 10),child:Text("Exporting to excel.." )),
-            ],),
+              Container(margin: EdgeInsets.only(left: 10), child: Text("Exporting to excel..")),
+            ],
+          ),
         );
       },
     );
   }
 
-  showExportCompleteDialog(){
-    showDialog(barrierDismissible: false,
-      context:context,
-      builder:(BuildContext context){
+  showExportCompleteDialog() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
         return AlertDialog(
           content: new Row(
             children: [
-              CircularProgressIndicator(value: 100.0,),
-              Container(margin: EdgeInsets.only(left: 10),child:Text("Export completed" )),
-            ],),
+              CircularProgressIndicator(
+                value: 100.0,
+              ),
+              Container(margin: EdgeInsets.only(left: 10), child: Text("Export completed")),
+            ],
+          ),
         );
       },
     );
@@ -110,22 +153,26 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
       ),
       actions: [
         IconButton(
-            icon: Icon(
-              Icons.import_export_sharp,
-              color: Colors.white,
-            ),
-            onPressed: () async {
-              var x = await ExportToExcel(timesheetModels); //Send Project name here
-              //debugPrint(x); //get filename here
-              (x!=null) ? showExportCompleteDialog() : showExportProgressDialog();
-            }),
-        IconButton(
           icon: Icon(
             Icons.work_outline,
             color: Colors.white,
           ),
           onPressed: () => projectDialog(),
-        )
+        ),
+        IconButton(
+          icon: Icon(Icons.calendar_today, color: Colors.white),
+          onPressed: () => selectMonth(context),
+        ),
+        IconButton(
+            icon: Icon(
+              Icons.import_export_sharp,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              var x = await exportToPDF(timesheetModels, selectedMonth!=null?getMonth(selectedMonth):null); //Send Project name here
+              //debugPrint(x); //get filename here
+              (x != null) ? showExportCompleteDialog() : showExportProgressDialog();
+            }),
       ],
     );
 

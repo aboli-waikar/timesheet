@@ -35,7 +35,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
     return yearMonth;
   }
 
-  Future<void> selectDate(BuildContext context) async {
+  Future<void> selectMonth(BuildContext context) async {
     final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
     setState(() {
       selectedMonth = d;
@@ -109,7 +109,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
           actions: [
             IconButton(
               icon: Icon(Icons.calendar_today, color: Colors.white),
-              onPressed: () => selectDate(context),
+              onPressed: () => selectMonth(context),
             ),
           ],
         ),
