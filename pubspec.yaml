@@ -47,7 +47,7 @@ flutter_icons:
   image_path: "icons/icon.png"
   android: true
   ios: true
-
+# flutter pub run flutter_launcher_icons:main --> run this command to change android launcher icon
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
