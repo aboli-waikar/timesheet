@@ -30,8 +30,12 @@ dependencies:
   month_picker_dialog: ^0.3.3
   pdf: ^2.1.0
   open_file: ^3.0.1
-  printing: ^4.1.0
-  flutter_html_view: ^0.3.1
+  #printing: ^4.1.0
+  #flutter_html_view: ^0.3.1
+  http: ^0.12.1
+  flutter_appauth: ^0.9.1
+  flutter_secure_storage: ^3.3.3
+
 
 
   # The following adds the Cupertino Icons font to your application.
