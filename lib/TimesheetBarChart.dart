@@ -66,7 +66,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
         id: 'chart000',
         domainFn: (ChartModel chartData, _) => chartData.date,
         measureFn: (ChartModel chartData, _) => chartData.hrs,
-        colorFn: (ChartModel chartData, _) => Charts.MaterialPalette.deepOrange.shadeDefault,
+        colorFn: (ChartModel chartData, _) => Charts.MaterialPalette.green.shadeDefault,
         data: _myData,
       ),
     ];
@@ -82,8 +82,11 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
           child: Charts.TimeSeriesChart(
             seriesList,
             animate: true,
-            defaultRenderer: Charts.BarRendererConfig<DateTime>(groupingType: Charts.BarGroupingType.stacked),
-            domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
+            defaultRenderer:
+            Charts.BarRendererConfig<DateTime>(
+                groupingType: Charts.BarGroupingType.stacked,
+                cornerStrategy: Charts.ConstCornerStrategy(2)),
+                domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
           ),
         ),
         Padding(
@@ -102,15 +105,19 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            "Dashboard",
-            style: TextStyle(fontSize: 16.0),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.red, Colors.orangeAccent]
+              )
+            ),
           ),
+          title: Text("Home", style: TextStyle(fontSize: 16.0),),
           actions: [
             IconButton(
-              icon: Icon(Icons.calendar_today, color: Colors.white),
-              onPressed: () => selectMonth(context),
-            ),
+              icon: Icon(Icons.calendar_today, color: Colors.white), onPressed: () => selectMonth(context),),
           ],
         ),
         body: ListView.builder(
@@ -125,7 +132,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
                 ClipRRect(
                     borderRadius: BorderRadius.circular(5.0),
                     child: Container(
-                        color: Theme.of(context).colorScheme.background,
+                        //color: Theme.of(context).colorScheme.background,
                         padding: MediaQuery.of(context).padding,
                         child: getTSChart(),
                         height: 185,

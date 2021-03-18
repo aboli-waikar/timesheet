@@ -26,4 +26,15 @@ A widget may extend a StatefulWidget, or a StatelessWidget.
  * It must override the `createState` method.
  * The `createState` method returns a *State which is of type State<>
  * From any method inside the *State, we can access the widget anytime using a `widget` property.
+ * To change the launch icon, update the pubspec.yaml
+ flutter_launcher_icons: ^0.8.1
+ 
+ flutter_icons:
+   image_path: "icons/ic_launcher.png"
+ * Add icon to androind>app>src>main>res> drawble, update launch_background
+  <item>
+     <bitmap
+         android:gravity="center"
+         android:src="@drawable/ic_launcher" />
+     </item>
 

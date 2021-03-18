@@ -128,10 +128,16 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
 
   AppBar getAppBar() {
     var appBarWithDeleteIcon = AppBar(
-      title: Text(
-        "Project: ABC",
-        style: TextStyle(fontSize: 16.0),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.red, Colors.orangeAccent]
+            )
+        ),
       ),
+      title: Text("Project: ABC", style: TextStyle(fontSize: 16.0),),
       actions: [
         IconButton(
             icon: Icon(Icons.delete),
@@ -147,10 +153,16 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     );
 
     var appBar = AppBar(
-      title: Text(
-        "Project: ABC",
-        style: TextStyle(fontSize: 16.0),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.red, Colors.orangeAccent]
+            )
+        ),
       ),
+      title: Text("Project: ABC", style: TextStyle(fontSize: 16.0),),
       actions: [
         IconButton(
           icon: Icon(
@@ -226,11 +238,11 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                         children: [
                           Text("Hours Spent: ", style: TextStyle(fontSize: 12.0)),
                           Text(snapshot.data[index].tsModel.hrs.toString(),
-                              style: TextStyle(fontSize: 14.0, color: Colors.blue, fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontSize: 14.0, color: Colors.green, fontWeight: FontWeight.bold)),
                         ],
                       )
                     ]),
-                    subtitle: Text(snapshot.data[index].tsModel.workDescription, style: TextStyle(fontSize: 14.0, color: Colors.blue)),
+                    subtitle: Text(snapshot.data[index].tsModel.workDescription, style: TextStyle(fontSize: 14.0, color: Colors.green)),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
                     });
@@ -239,12 +251,12 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-          tooltip: 'Enter Timesheet',
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
-          }),
+      // floatingActionButton: FloatingActionButton(
+      //     tooltip: 'Enter Timesheet',
+      //     child: Icon(Icons.add),
+      //     onPressed: () {
+      //       Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
+      //     }),
     );
   }
 }

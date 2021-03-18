@@ -99,7 +99,18 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text((widget.tsModel.id == null) ? "Enter Timesheet": "Update Timesheet"),
+        //toolbarHeight: 0.0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.red, Colors.orangeAccent]
+              )
+          ),
+        ),
+        title: Text((widget.tsModel.id == null) ? "Enter Timesheet": "Update Timesheet"
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

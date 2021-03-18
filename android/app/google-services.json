@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "740843860932",
+    "project_id": "timesheet-2021",
+    "storage_bucket": "timesheet-2021.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740843860932:android:6dde26d245a6032531aa91",
+        "android_client_info": {
+          "package_name": "codionics.com.timesheet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740843860932-gi8l3resb4c3jss5bq0hj2hq4iho61jq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHxwxqRvbeVai2ubplFTFAWsCw90-rBcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740843860932-gi8l3resb4c3jss5bq0hj2hq4iho61jq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

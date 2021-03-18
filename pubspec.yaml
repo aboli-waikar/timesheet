@@ -32,9 +32,14 @@ dependencies:
   open_file: ^3.0.1
   #printing: ^4.1.0
   #flutter_html_view: ^0.3.1
-  http: ^0.12.1
-  flutter_appauth: ^0.9.1
+  # Authentication using flutter_appauth https://auth0.auth0.com/u/login
+  #http: ^0.12.1
+  #flutter_appauth: ^0.9.1
   flutter_secure_storage: ^3.3.3
+  # Authentication using Firebase
+  firebase_auth: ^0.16.0
+  firebase_dynamic_links: ^0.5.1
+  #google_sign_in: ^4.4.4
 
 
 
@@ -48,7 +53,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.8.1
 
 flutter_icons:
-  image_path: "icons/icon.png"
+  image_path: "icons/ic_launcher.png"
   android: true
   ios: true
 # flutter pub run flutter_launcher_icons:main --> run this command to change android launcher icon
@@ -66,6 +71,12 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
   - images/profile.png
+  - images/icon.png
+  - images/google.png
+  - images/background.jpeg
+  - images/CreateProject.png
+  - images/CreateTimeSheet.png
+  - images/StartTimer.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
