@@ -16,7 +16,7 @@ class TimeSheet implements Domain {
   TimeSheet(this._selectedDate, this._startTime, this._endTime, this._workDescription);
 
   //Constructor to take values from map where Date, ST, ET, WD are columns of database table TimeSheet and assign to class variables Database -> TSModel
-  TimeSheet.convertToTimeSheetModel(Map<String, dynamic> map) {
+  TimeSheet.convertToTimeSheet(Map<String, dynamic> map) {
     this._selectedDate = DateTime.parse(map["Date"]);
     this._startTime = stringToTimeOfDay(map["ST"]);
     this._endTime = stringToTimeOfDay(map["ET"]);
@@ -106,6 +106,6 @@ class TimeSheet implements Domain {
 
   @override
   String toString() {
-    return "TimesheetModel($id, $selectedDate, $startTime, $endTime, $workDescription, $hrs,)";
+    return "Timesheet($id, $selectedDate, $startTime, $endTime, $workDescription, $hrs)";
   }
 }

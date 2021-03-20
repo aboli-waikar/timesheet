@@ -1,4 +1,4 @@
-import 'DAO.dart';
+import 'package:timesheet/daos/DAO.dart';
 import '../models/Timesheet.dart';
 
 class TimesheetDAO extends DAO<TimeSheet> {
