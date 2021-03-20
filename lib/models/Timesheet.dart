@@ -5,18 +5,21 @@ import 'package:timesheet/models/Domain.dart';
 // This is domain model class of TimeSheet. It defines the database fields and table
 
 class TimeSheet implements Domain {
+  int _id;
+  int _projectId;
   DateTime _selectedDate;
   TimeOfDay _startTime;
   TimeOfDay _endTime;
   String _workDescription;
-  int _id;
   num _numberOfhrs;
 
-  //Constructor to pass the values taken from User
-  TimeSheet(this._selectedDate, this._startTime, this._endTime, this._workDescription);
+  // Constructor to pass the values taken from User
+  TimeSheet(this._projectId, this._selectedDate, this._startTime, this._endTime, this._workDescription);
 
-  //Constructor to take values from map where Date, ST, ET, WD are columns of database table TimeSheet and assign to class variables Database -> TSModel
+  // Constructor to take values from map where Date, ST, ET, WD are columns of
+  // database table TimeSheet and assign to class variables Database -> TSModel
   TimeSheet.convertToTimeSheet(Map<String, dynamic> map) {
+    this._projectId = map["ProjectId"];
     this._selectedDate = DateTime.parse(map["Date"]);
     this._startTime = stringToTimeOfDay(map["ST"]);
     this._endTime = stringToTimeOfDay(map["ET"]);
@@ -26,10 +29,20 @@ class TimeSheet implements Domain {
   }
 
   static getNullObject() {
-    return TimeSheet(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), "");
+    return TimeSheet(0, DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), "");
   }
 
-  //The private variables of class can be accessed using get method
+  // The private variables of class can be accessed using get method
+  int get id => _id;
+  set id(int id) {
+    this._id = id;
+  }
+
+  int get projectId => _projectId;
+  set projectId(int projectId) {
+    this._projectId = projectId;
+  }
+
   DateTime get selectedDate => _selectedDate;
   set selectedDate(DateTime selectedDate) {
     this._selectedDate = selectedDate;
@@ -67,14 +80,10 @@ class TimeSheet implements Domain {
     this._workDescription = workDescription;
   }
 
-  int get id => _id;
-  set id(int id) {
-    this._id = id;
-  }
-
   num get hrs => _numberOfhrs;
 
-  //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. TSModel -> Map -> DB
+  // Domain class is expecting to override toMap and toUpdateMap methods. These
+  // methods are used to take values from User and populate map. TSModel -> Map -> DB
   @override
   Map<String, dynamic> mapForDBInsert() {
     var m = mapForDBUpdate();
@@ -106,6 +115,6 @@ class TimeSheet implements Domain {
 
   @override
   String toString() {
-    return "Timesheet($id, $selectedDate, $startTime, $endTime, $workDescription, $hrs)";
+    return "Timesheet($id, $projectId, $selectedDate, $startTime, $endTime, $workDescription, $hrs)";
   }
 }

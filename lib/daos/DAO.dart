@@ -6,14 +6,14 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 
 class DAO<T extends Domain> {
-  //Constructor definition, _variables are private to class and not exposed directly.
+  // Constructor definition, _variables are private to class and not exposed directly.
 
   static Database _db;
   String _tableName;
   String _pkColumn;
   String _colNamesWithDbTypes;
 
-  //Use getter and setter methods to asscociate with private variables of class.
+  // Use getter and setter methods to asscociate with private variables of class.
   String get tableName => _tableName;
 
   set tableName(String tableName) {
@@ -57,7 +57,6 @@ class DAO<T extends Domain> {
     print("Table is created");
   }
 
-  /// This method is getItems method.
   Future<List> getAll(String sortColumn) async {
     var dbClient = await db;
     var result = await dbClient.query(
@@ -76,7 +75,7 @@ class DAO<T extends Domain> {
 
   Future<Map<String, dynamic>> getById(int id) async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE id =$id");
+    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE id = $id");
     if (result.length == 0) return null;
     return result.first;
   }
