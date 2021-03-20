@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:timesheet/Login.dart';
-import 'package:timesheet/NavigateMenus.dart';
+import 'package:timesheet/views/Login.dart';
+import 'package:timesheet/views/NavigateMenus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
-
 
 /// -----------------------------------
 ///                 App
@@ -19,7 +18,6 @@ class TimeSheetApp extends StatefulWidget {
 }
 
 class _TimeSheetAppState extends State<TimeSheetApp> {
-
   bool isBusy = false;
   bool isLoggedIn = false;
 
@@ -42,17 +40,15 @@ class _TimeSheetAppState extends State<TimeSheetApp> {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: 'TimeSheet',
       home: Scaffold(
-
         body: Center(
           child: isBusy
-               ? const CircularProgressIndicator()
-               : isLoggedIn
-               ? NavigateMenus()
-               : Login(),
+              ? const CircularProgressIndicator()
+              : isLoggedIn
+                  ? NavigateMenus()
+                  : Login(),
         ),
       ),
     );

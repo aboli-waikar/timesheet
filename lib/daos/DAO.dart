@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:timesheet/Domain.dart';
+import 'package:timesheet/models/Domain.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -60,11 +60,13 @@ class DAO<T extends Domain> {
   /// This method is getItems method.
   Future<List> getAll(String sortColumn) async {
     var dbClient = await db;
-    var result = await dbClient.query("$tableName", orderBy:"$sortColumn DESC",);
+    var result = await dbClient.query(
+      "$tableName",
+      orderBy: "$sortColumn DESC",
+    );
     var res = result.toList();
     //print(res);
     return res;
-
   }
 
   Future<int> getCount() async {

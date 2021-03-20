@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
-import 'ChartModel.dart';
+import '../models/ChartViewModel.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
-import 'TimesheetDAO.dart';
-import 'TimesheetModel.dart';
+import '../daos/TimesheetDAO.dart';
+import '../models/Timesheet.dart';
 import 'package:intl/intl.dart';
 
 class TimesheetBarChart extends StatefulWidget {
@@ -12,8 +12,8 @@ class TimesheetBarChart extends StatefulWidget {
 }
 
 class _TimesheetBarChartState extends State<TimesheetBarChart> {
-  var chModel = ChartModel(DateTime.now(), 0);
-  List<ChartModel> _myData = [ChartModel(DateTime.now(), 0)];
+  var chModel = ChartViewModel(DateTime.now(), 0);
+  List<ChartViewModel> _myData = [ChartViewModel(DateTime.now(), 0)];
   var selectedMonth = DateTime.now();
   List<String> projectList = ['P1', 'P2'];
 
@@ -36,7 +36,8 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   }
 
   Future<void> selectMonth(BuildContext context) async {
-    final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
+    final DateTime d = await showMonthPicker(
+        context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
     setState(() {
       selectedMonth = d;
       getTSData();
@@ -46,7 +47,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   Future getTSData() async {
     final tsDAO = TimesheetDAO();
     List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-    var tsModels = tsMapList.map((e) => TimeSheetModel.convertToTimeSheetModel(e)).toList();
+    var tsModels = tsMapList.map((e) => TimeSheet.convertToTimeSheetModel(e)).toList();
     //debugPrint(tsModels.join(", ").toString());
 
     setState(() {
@@ -54,25 +55,25 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
       _myData = tsModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(selectedMonth)).map((tsModel) {
         final DateTime date = tsModel.selectedDate;
         var hrs = tsModel.hrs;
-        return ChartModel(date, hrs);
+        return ChartViewModel(date, hrs);
       }).toList();
     });
     //debugPrint(_myData.join(", ").toString());
   }
 
   Widget getTSChart() {
-    final List<Charts.Series<ChartModel, DateTime>> seriesList = [
-      Charts.Series<ChartModel, DateTime>(
+    final List<Charts.Series<ChartViewModel, DateTime>> seriesList = [
+      Charts.Series<ChartViewModel, DateTime>(
         id: 'chart000',
-        domainFn: (ChartModel chartData, _) => chartData.date,
-        measureFn: (ChartModel chartData, _) => chartData.hrs,
-        colorFn: (ChartModel chartData, _) => Charts.MaterialPalette.green.shadeDefault,
+        domainFn: (ChartViewModel chartData, _) => chartData.date,
+        measureFn: (ChartViewModel chartData, _) => chartData.hrs,
+        colorFn: (ChartViewModel chartData, _) => Charts.MaterialPalette.green.shadeDefault,
         data: _myData,
       ),
     ];
 
     var currentMonth = getMonthStr(selectedMonth);
-    var tMin = _myData.fold(0, (prev, ChartModel element) => prev + element.getMins());
+    var tMin = _myData.fold(0, (prev, ChartViewModel element) => prev + element.getMins());
     var totalHrs = chModel.getHrsMin(tMin);
 
     return ListView(
@@ -82,11 +83,9 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
           child: Charts.TimeSeriesChart(
             seriesList,
             animate: true,
-            defaultRenderer:
-            Charts.BarRendererConfig<DateTime>(
-                groupingType: Charts.BarGroupingType.stacked,
-                cornerStrategy: Charts.ConstCornerStrategy(2)),
-                domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
+            defaultRenderer: Charts.BarRendererConfig<DateTime>(
+                groupingType: Charts.BarGroupingType.stacked, cornerStrategy: Charts.ConstCornerStrategy(2)),
+            domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
           ),
         ),
         Padding(
@@ -107,17 +106,18 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
         appBar: AppBar(
           flexibleSpace: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.red, Colors.orangeAccent]
-              )
-            ),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
           ),
-          title: Text("Home", style: TextStyle(fontSize: 16.0),),
+          title: Text(
+            "Home",
+            style: TextStyle(fontSize: 16.0),
+          ),
           actions: [
             IconButton(
-              icon: Icon(Icons.calendar_today, color: Colors.white), onPressed: () => selectMonth(context),),
+              icon: Icon(Icons.calendar_today, color: Colors.white),
+              onPressed: () => selectMonth(context),
+            ),
           ],
         ),
         body: ListView.builder(

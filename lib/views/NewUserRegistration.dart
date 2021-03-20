@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:timesheet/NavigateMenus.dart';
+import 'package:timesheet/views/NavigateMenus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -29,16 +29,16 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(toolbarHeight: 0,),
+        appBar: AppBar(
+          toolbarHeight: 0,
+        ),
         body: Stack(
           children: [
-
             Container(
               height: 410,
               width: 430,
-              decoration: BoxDecoration(
-                  image: DecorationImage(image: AssetImage("images/background.jpeg"), fit: BoxFit.cover)
-              ),
+              decoration:
+                  BoxDecoration(image: DecorationImage(image: AssetImage("images/background.jpeg"), fit: BoxFit.cover)),
             ),
             SingleChildScrollView(
               child: Column(
@@ -58,10 +58,11 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text('L O G I N', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                            child: Text('L O G I N',
+                                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(10.0,6.0,10.0,8.0),
+                            padding: const EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 8.0),
                             child: TextFormField(
                               controller: _emailController,
                               style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
@@ -75,7 +76,6 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                               validator: (String value) {
                                 debugPrint(_emailController.text);
                                 if (value.isEmpty) {
-
                                   return 'Email required';
                                 }
                                 return null;
@@ -85,7 +85,7 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(10.0,6.0,10.0,8.0),
+                            padding: const EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 8.0),
                             child: TextFormField(
                               controller: _passwordController,
                               obscureText: showPassword,
@@ -116,7 +116,7 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(10.0,6.0,10.0,8.0),
+                            padding: const EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 8.0),
                             child: TextFormField(
                               controller: _confirmPasswordController,
                               obscureText: showPassword,
@@ -145,15 +145,16 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                                 onPressed: () async {
                                   if (_formKey.currentState.validate()) {
-                                    _register();}
-                                }
-                            ),
+                                    _register();
+                                  }
+                                }),
                           ),
-
                           Container(
                               alignment: Alignment.center,
                               child: Text(
-                                _success == null ? '' : (_success ? 'Successfully registered' + _userEmail : 'Registration Failed'),
+                                _success == null
+                                    ? ''
+                                    : (_success ? 'Successfully registered' + _userEmail : 'Registration Failed'),
                               )),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
@@ -174,13 +175,15 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                                         height: 30.0,
                                         width: 30.0,
                                         decoration: BoxDecoration(
-                                          image: DecorationImage(image: AssetImage('images/google.png'), fit: BoxFit.cover),
+                                          image: DecorationImage(
+                                              image: AssetImage('images/google.png'), fit: BoxFit.cover),
                                           shape: BoxShape.circle,
                                         ),
                                       ),
                                       Text(
                                         'Sign in with Google',
-                                        style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.white),
+                                        style:
+                                            TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.white),
                                       )
                                     ],
                                   ),
@@ -200,34 +203,32 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
         ));
   }
 
-  clearForm(){
+  clearForm() {
     //on Logout the login page is again displayed. This function clears the user input fields.
-    _emailController.text ='';
-    _passwordController.text ='';
+    _emailController.text = '';
+    _passwordController.text = '';
   }
 
   void _register() async {
-
     debugPrint("In register");
 
-    AuthResult x = await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+    AuthResult x =
+        await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
     final FirebaseUser User = x.user;
     await secureStorage.write(key: 'uid', value: User.uid);
     debugPrint(User.uid);
 
-    if(User != null){
+    if (User != null) {
       setState(() {
         _success = true;
         _userEmail = User.email;
         clearForm();
         Navigator.push(context, MaterialPageRoute(builder: (context) => NavigateMenus()));
       });
-    }
-    else {
+    } else {
       setState(() {
         _success = false;
       });
     }
-
   }
 }

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:timesheet/ReadTimeSheet.dart';
-import 'package:timesheet/TimesheetDAO.dart';
+import 'package:timesheet/views/ReadTimeSheet.dart';
+import 'package:timesheet/daos/TimesheetDAO.dart';
 import 'dart:async';
-import 'TimesheetModel.dart';
+import '../models/Timesheet.dart';
 
 class InsertUpdateTimeSheet extends StatefulWidget {
-  TimeSheetModel tsModel;
+  TimeSheet tsModel;
 
   InsertUpdateTimeSheet.defaultModel() {
-    this.tsModel = TimeSheetModel.getNullObject();
-
+    this.tsModel = TimeSheet.getNullObject();
   }
 
   InsertUpdateTimeSheet(this.tsModel);
@@ -33,9 +32,12 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
     isEnabled = (widget.tsModel.id == null) ? false : true;
   }
 
-
   Future<void> selectDate(BuildContext context) async {
-    final DateTime d = await showDatePicker(context: context, initialDate: widget.tsModel.selectedDate, firstDate: DateTime(2000), lastDate: DateTime(2030));
+    final DateTime d = await showDatePicker(
+        context: context,
+        initialDate: widget.tsModel.selectedDate,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2030));
     debugPrint('$d');
     setState(() {
       widget.tsModel.selectedDate = d;
@@ -68,32 +70,30 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   }
 
   void saveTimeSheet(String text) async {
-      widget.tsModel.workDescription = text;
+    widget.tsModel.workDescription = text;
 
-      if(widget.tsModel.id == null) {
+    if (widget.tsModel.id == null) {
       int savedTimeSheetId = await tsDAO.insert(widget.tsModel);
-      print('$savedTimeSheetId');}
-      else
-        await tsDAO.update(widget.tsModel);
-
-
+      print('$savedTimeSheetId');
+    } else
+      await tsDAO.update(widget.tsModel);
   }
 
   void deleteTimeSheet(int id) async {
     widget.tsModel.id = id;
     await tsDAO.delete(id);
-
   }
- DeleteButton(){
-   var delete = ElevatedButton(
-       onPressed:  () {
-         deleteTimeSheet(widget.tsModel.id);
-         Navigator.pop(context);
-         Navigator.pushReplacementNamed(context,'/');
-       } ,
-       child: Text('Delete'));
-  return delete;
- }
+
+  DeleteButton() {
+    var delete = ElevatedButton(
+        onPressed: () {
+          deleteTimeSheet(widget.tsModel.id);
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, '/');
+        },
+        child: Text('Delete'));
+    return delete;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,48 +103,61 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.red, Colors.orangeAccent]
-              )
-          ),
+                  begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
         ),
-        title: Text((widget.tsModel.id == null) ? "Enter Timesheet": "Update Timesheet"
-        ),
+        title: Text((widget.tsModel.id == null) ? "Enter Timesheet" : "Update Timesheet"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
-
           children: [
             Row(
               children: [
-                IconButton(icon: Icon(Icons.calendar_today, color: Colors.blueAccent,), tooltip: 'Pick a date', onPressed: () => selectDate(context)),
+                IconButton(
+                    icon: Icon(
+                      Icons.calendar_today,
+                      color: Colors.blueAccent,
+                    ),
+                    tooltip: 'Pick a date',
+                    onPressed: () => selectDate(context)),
                 Text(
                   'Date: ',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.tsModel.selectedDateStr, /*style: TextStyle(fontSize: 12,color: Colors.black, fontWeight: FontWeight.bold),*/
+                  widget.tsModel
+                      .selectedDateStr, /*style: TextStyle(fontSize: 12,color: Colors.black, fontWeight: FontWeight.bold),*/
                 ),
               ],
             ),
             Row(
               children: [
-                IconButton(icon: Icon(Icons.access_time, color: Colors.blueAccent), tooltip: 'Pick a Start time', onPressed: () => _selectStartTime(context)),
-                Text('Start Time: ', style: TextStyle(fontWeight: FontWeight.bold),),
-                Text(widget.tsModel.timeOfDayToString(widget.tsModel.startTime),),
+                IconButton(
+                    icon: Icon(Icons.access_time, color: Colors.blueAccent),
+                    tooltip: 'Pick a Start time',
+                    onPressed: () => _selectStartTime(context)),
+                Text(
+                  'Start Time: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  widget.tsModel.timeOfDayToString(widget.tsModel.startTime),
+                ),
               ],
             ),
             Row(
               children: [
-                IconButton(icon: Icon(Icons.access_time, color: Colors.blueAccent), tooltip: 'Pick a Start time', onPressed: () => _selectEndTime(context)),
+                IconButton(
+                    icon: Icon(Icons.access_time, color: Colors.blueAccent),
+                    tooltip: 'Pick a Start time',
+                    onPressed: () => _selectEndTime(context)),
                 Text(
                   'End Time: ',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.tsModel.timeOfDayToString(widget.tsModel.endTime), /*style: TextStyle(fontSize: 12,color: Colors.black, fontWeight: FontWeight.bold),*/
+                  widget.tsModel.timeOfDayToString(widget.tsModel
+                      .endTime), /*style: TextStyle(fontSize: 12,color: Colors.black, fontWeight: FontWeight.bold),*/
                 ),
               ],
             ),
@@ -152,21 +165,21 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
               padding: const EdgeInsets.fromLTRB(12.0, 8, 0, 0),
               child: Row(
                 children: [
-                  Text('Work Description:', style: TextStyle(fontWeight: FontWeight.bold),),
+                  Text(
+                    'Work Description:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(14.0, 8, 14.0, 0),
               child: TextFormField(
-
                 maxLength: 300,
                 maxLines: 5,
                 autofocus: true,
                 controller: textFormField,
                 decoration: InputDecoration(border: OutlineInputBorder()),
-
-
               ),
             ),
             Padding(
@@ -179,9 +192,9 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
                         saveTimeSheet(textFormField.text);
                         Navigator.pop(context);
                         //Use PushReplacementNamed method to go back to the root page without back arrow in Appbar.
-                        Navigator.pushReplacementNamed(context,'/');
+                        Navigator.pushReplacementNamed(context, '/');
                       },
-                      child: Text(isEnabled ? 'Update': 'Submit')),
+                      child: Text(isEnabled ? 'Update' : 'Submit')),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: isEnabled ? DeleteButton() : null,

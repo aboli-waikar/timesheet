@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:timesheet/Domain.dart';
+import 'package:timesheet/models/Domain.dart';
 
 // This is domain model class of TimeSheet. It defines the database fields and table
 
-class TimeSheetModel implements Domain {
+class TimeSheet implements Domain {
   DateTime _selectedDate;
   TimeOfDay _startTime;
   TimeOfDay _endTime;
@@ -13,10 +13,10 @@ class TimeSheetModel implements Domain {
   num _numberOfhrs;
 
   //Constructor to pass the values taken from User
-  TimeSheetModel(this._selectedDate, this._startTime, this._endTime, this._workDescription);
+  TimeSheet(this._selectedDate, this._startTime, this._endTime, this._workDescription);
 
   //Constructor to take values from map where Date, ST, ET, WD are columns of database table TimeSheet and assign to class variables Database -> TSModel
-  TimeSheetModel.convertToTimeSheetModel(Map<String, dynamic> map) {
+  TimeSheet.convertToTimeSheetModel(Map<String, dynamic> map) {
     this._selectedDate = DateTime.parse(map["Date"]);
     this._startTime = stringToTimeOfDay(map["ST"]);
     this._endTime = stringToTimeOfDay(map["ET"]);
@@ -26,7 +26,7 @@ class TimeSheetModel implements Domain {
   }
 
   static getNullObject() {
-    return TimeSheetModel(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), "");
+    return TimeSheet(DateTime.now(), TimeOfDay.now(), TimeOfDay.now(), "");
   }
 
   //The private variables of class can be accessed using get method
@@ -68,11 +68,11 @@ class TimeSheetModel implements Domain {
   }
 
   int get id => _id;
-  set id(int id){
+  set id(int id) {
     this._id = id;
   }
-  num get hrs => _numberOfhrs;
 
+  num get hrs => _numberOfhrs;
 
   //Domain class is expecting to override toMap and toUpdateMap methods. These methods are used to take values from User and populate map. TSModel -> Map -> DB
   @override
@@ -94,13 +94,13 @@ class TimeSheetModel implements Domain {
     updateMap["ET"] = timeOfDayToString(endTime);
     updateMap["WD"] = workDescription;
 
-    int smin = startTime.hour*60+startTime.minute;
-    int emin = endTime.hour*60+endTime.minute;
-    var diffmin = (emin-smin)/60;
-    _numberOfhrs = diffmin.toInt() + ((emin-smin)%60)/100 ;
+    int smin = startTime.hour * 60 + startTime.minute;
+    int emin = endTime.hour * 60 + endTime.minute;
+    var diffmin = (emin - smin) / 60;
+    _numberOfhrs = diffmin.toInt() + ((emin - smin) % 60) / 100;
     //debugPrint('$_numberOfhrs');
 
-    updateMap["HRS"] = (_numberOfhrs == 0.0) ? 0.0 : _numberOfhrs ;
+    updateMap["HRS"] = (_numberOfhrs == 0.0) ? 0.0 : _numberOfhrs;
     return updateMap;
   }
 
@@ -108,5 +108,4 @@ class TimeSheetModel implements Domain {
   String toString() {
     return "TimesheetModel($id, $selectedDate, $startTime, $endTime, $workDescription, $hrs,)";
   }
-
 }
