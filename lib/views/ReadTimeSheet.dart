@@ -24,13 +24,13 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     debugPrint(selectedMonth.toString());
     if (selectedMonth == null) {
       List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-      timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheet.convertToTimeSheetModel(tsRowAsMap)).toList();
+      timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheet.convertToTimeSheet(tsRowAsMap)).toList();
       List<DeleteTimeSheetViewModel> listDelTSViewModel =
           timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
       return listDelTSViewModel;
     } else {
       List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-      List tsModels = tsMapList.map((tsRowAsMap) => TimeSheet.convertToTimeSheetModel(tsRowAsMap)).toList();
+      List tsModels = tsMapList.map((tsRowAsMap) => TimeSheet.convertToTimeSheet(tsRowAsMap)).toList();
       timesheetModels = tsModels.where((element) => getMonth(element.selectedDate) == getMonth(selectedMonth)).toList();
       List<DeleteTimeSheetViewModel> listDelTSViewModel =
           timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
