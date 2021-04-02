@@ -5,6 +5,8 @@ import 'package:timesheet/views/Profile.dart';
 import 'package:timesheet/views/ReadTimeSheet.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'InsertUpdateTimeSheet.dart';
+import 'Expenses.dart';
+import 'Projects.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -32,8 +34,8 @@ class _NavigateMenusState extends State<NavigateMenus> {
       Home(),
       ReadTimeSheet(),
       Home(),
+      Expenses(),
       Profile(),
-      Home(),
     ];
     return MaterialApp(
       title: 'TimeSheet',
@@ -68,16 +70,16 @@ class _NavigateMenusState extends State<NavigateMenus> {
             ),
             BottomNavigationBarItem(
                 icon: Icon(
-                  Icons.person,
+                  Icons.money_outlined,
                   color: Colors.brown,
                 ),
-                label: 'Profile'),
+                label: 'Expenses'),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.settings,
+                Icons.person,
                 color: Colors.brown,
               ),
-              label: 'Settings',
+              label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,
@@ -101,6 +103,7 @@ class _NavigateMenusState extends State<NavigateMenus> {
   }
 
   showSheet() {
+    var pr = ProjectsState();
     showModalBottomSheet(
       useRootNavigator: false,
       backgroundColor: Colors.transparent,
@@ -196,10 +199,8 @@ class _NavigateMenusState extends State<NavigateMenus> {
                                     width: 100,
                                     alignment: Alignment.center,
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
-                                  }),
+                                  onPressed: () => pr.showProjectDialog(context),
+                                  ),
                             )),
                       ],
                     ),
@@ -220,22 +221,3 @@ class _NavigateMenusState extends State<NavigateMenus> {
     );
   }
 }
-
-// Container(
-// //color: Colors.deepOrange,
-// width: 200,
-// child: ListTile(
-// shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-// title: Image.asset(
-// "images/profile.png",
-// height: 100,
-// width: 100,
-// alignment: Alignment.center,
-// ),
-// subtitle: Text(
-// "Add Timesheet",
-// ),
-// onTap: () {
-// Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
-// }),
-// ),

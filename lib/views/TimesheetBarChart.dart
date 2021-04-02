@@ -5,6 +5,11 @@ import 'package:charts_flutter/flutter.dart' as Charts;
 import '../daos/TimesheetDAO.dart';
 import '../models/Timesheet.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:timesheet/daos/ProjectDAO.dart';
+import 'package:timesheet/models/Project.dart';
+
+const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 class TimesheetBarChart extends StatefulWidget {
   @override
@@ -15,12 +20,16 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   var chModel = ChartViewModel(DateTime.now(), 0);
   List<ChartViewModel> _myData = [ChartViewModel(DateTime.now(), 0)];
   var selectedMonth = DateTime.now();
-  List<String> projectList = ['P1', 'P2'];
+  var prDAO = ProjectDAO();
+  var prModel = Project.getNullObject();
+  var projectList;
 
   @override
   void initState() {
     super.initState();
+    getProjectList();
     getTSData();
+
   }
 
   getMonth(DateTime dT) {
@@ -42,6 +51,24 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
       selectedMonth = d;
       getTSData();
     });
+  }
+
+  Future getProjectList() async {
+
+    final String storedUIDToken = await secureStorage.read(key: 'uid');
+    List prMapList = await prDAO.getAll(prDAO.pkColumn);
+    List<Project> prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
+    if (prModels == null) {
+      var prDefModel = Project(storedUIDToken, 'Default', 'Default', 10);
+      await prDAO.insert(prDefModel);
+      prMapList = await prDAO.getAll(prDAO.pkColumn);
+      prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
+      projectList = prModels.map((e) => e.name).toList();
+      debugPrint(projectList.toString());
+      return projectList;
+    }
+    else
+      return projectList;
   }
 
   Future getTSData() async {
@@ -102,6 +129,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
 
   @override
   Widget build(BuildContext context) {
+    getProjectList();
     return Scaffold(
         appBar: AppBar(
           flexibleSpace: Container(

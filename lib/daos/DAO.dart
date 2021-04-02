@@ -53,8 +53,9 @@ class DAO<T extends Domain> {
   }
 
   void _onCreate(Database db, int version) async {
-    await db.execute("CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)");
-    print("Table is created");
+    //await db.execute("CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)");
+    await db.execute ("CREATE TABLE ProjectTbl(ID INTEGER PRIMARY KEY, UserId TEXT, Name TEXT, Company TEXT, Rate INT)");
+    await db.execute ("CREATE TABLE TimeSheetTbl(ID INTEGER PRIMARY KEY, ProjectId INT, Date TEXT, ST TEXT, ET TEXT, WD TEXT, HRS INT, PR TEXT)");
   }
 
   Future<List> getAll(String sortColumn) async {

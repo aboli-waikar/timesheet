@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+//import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'Login.dart';
+import 'Projects.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -15,13 +16,11 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  var picture = AssetImage("images/profile.png");
+  var picture = CircleAvatar(backgroundColor: Colors.brown, child: Text('TS', style: TextStyle(
+    fontSize: 22),), maxRadius: 35,);
   String name;
   String email;
-  List<String> projects = ['P1', 'P2'];
-  TextEditingController projectnameController = TextEditingController();
-  TextEditingController projectcompanyController = TextEditingController();
-  TextEditingController projecthourlyrateController = TextEditingController();
+
 
   @override
   void initState() {
@@ -34,59 +33,10 @@ class _ProfileState extends State<Profile> {
     final FirebaseUser user = await _auth.currentUser();
 
     setState(() {
-      picture = (user.photoUrl == null) ? AssetImage("images/profile.png") : NetworkImage(user.photoUrl);
-      name = (user.displayName == null) ? user.displayName : 'Profile';
+      picture = (user.photoUrl == null) ? picture : NetworkImage(user.photoUrl);
+      name = (user.displayName == null) ? 'Profile': user.displayName ;
       email = user.email;
     });
-  }
-
-  addProject(String text) {
-    projects.add(text);
-    debugPrint('$projects');
-  }
-
-  showProjectDialog() {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Add Project'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: projectcompanyController,
-                  decoration: InputDecoration(labelText: 'Company Name'),
-                ),
-                TextField(
-                  controller: projectnameController,
-                  decoration: InputDecoration(labelText: 'Project Name'),
-                ),
-                TextField(
-                  controller: projecthourlyrateController,
-                  decoration: InputDecoration(labelText: 'Hourly Rate'),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    FlatButton(
-                        onPressed: () {
-                          setState(() {
-                            addProject(projectnameController.text);
-                            //textEditingController.text = '';
-                          });
-                        },
-                        child: Text('Add Project')),
-                    FlatButton(onPressed: null, child: Text('Cancel')),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget build(BuildContext context) {
@@ -132,12 +82,8 @@ class _ProfileState extends State<Profile> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0, bottom: 10.0, top: 10.0),
-                      child: Image(
-                        image: picture,
-                        height: 80,
-                        width: 80,
+                      child: picture,
                       ),
-                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -159,38 +105,13 @@ class _ProfileState extends State<Profile> {
               ],
             )),
             Card(
-              child: ExpansionTile(
-                title: Text(
-                  'Project Information',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                children: [
-                  ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemCount: projects.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                            title: Text(projects[index]),
-                            visualDensity: VisualDensity(vertical: -4.0),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: null,
-                            ),
-                            onTap: null //edit the project,
-                            );
-                      })
-                ],
-              ),
+              child: Projects(),
             )
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   tooltip: 'Add Project',
-      //   child: Icon(Icons.add),
-      //   onPressed: () => showProjectDialog(),
-      // )
     );
   }
 }
+
+
