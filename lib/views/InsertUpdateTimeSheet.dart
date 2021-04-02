@@ -98,6 +98,7 @@ class InsertUpdateTimeSheetState extends State<InsertUpdateTimeSheet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         //toolbarHeight: 0.0,
         flexibleSpace: Container(

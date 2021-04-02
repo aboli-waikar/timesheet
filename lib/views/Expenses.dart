@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:timesheet/views/TimesheetBarChart.dart';
-import 'ToDoList.dart';
 
-class Home extends StatelessWidget {
-  Home();
+class Expenses extends StatelessWidget {
+  Expenses();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 0.0,
+          //toolbarHeight: 0.0,
           flexibleSpace: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -17,9 +15,7 @@ class Home extends StatelessWidget {
           ),
         ),
         body: ListView(children: [
-          Container(height: 280, child: TimesheetBarChart()),
-          Card(//child: ToDoList(),
-          ),
+          Container(),
 
         ]
 
