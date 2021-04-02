@@ -57,10 +57,12 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
 
     final String storedUIDToken = await secureStorage.read(key: 'uid');
     List prMapList = await prDAO.getAll(prDAO.pkColumn);
-    List<Project> prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
-    if (prModels == null) {
+
+    if (prMapList == null) {
+      List<Project> prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
       var prDefModel = Project(storedUIDToken, 'Default', 'Default', 10);
       await prDAO.insert(prDefModel);
+      debugPrint(prDefModel.name);
       prMapList = await prDAO.getAll(prDAO.pkColumn);
       prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
       projectList = prModels.map((e) => e.name).toList();
