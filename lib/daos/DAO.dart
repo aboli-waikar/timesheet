@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:timesheet/daos/DBCreator.dart';
+import 'package:timesheet/daos/ProjectDAO.dart';
 import 'package:timesheet/models/Domain.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -32,16 +34,13 @@ class DAO<T extends Domain> {
     this._colNamesWithDbTypes = colNamesWithDbTypes;
   }
 
-  Future<Database> get db async {
-    if (_db != null) {
-      print("_db instance is not null");
-      return _db;
-    }
+  String get createTableStatement => "CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)";
 
-    print("_db instance is null");
-    _db = await initDb();
-    return _db;
+  Future<Database> get db async {
+    var dbc = new DbCreator();
+    dbc.initDb();
   }
+
   //
   // initDb() async {
   //   print("_initializing db");

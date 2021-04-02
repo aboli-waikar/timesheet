@@ -3,12 +3,18 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:timesheet/daos/ProjectDAO.dart';
+import 'package:timesheet/daos/TimesheetDAO.dart';
 
 class DbCreator {
   static Database _db;
   List<String> _createTableStatements;
 
-  DbCreator(this._createTableStatements);
+  DbCreator() {
+    var projectDao = new ProjectDAO();
+    var timesheetDao = new TimesheetDAO();
+    _createTableStatements = [projectDao.createTableStatement, timesheetDao.createTableStatement];
+  }
 
   List<String> get createTableStatements => _createTableStatements;
 
