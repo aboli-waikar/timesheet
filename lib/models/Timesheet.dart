@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timesheet/daos/ProjectTable.dart';
+import 'package:timesheet/daos/TimesheetTable.dart';
 import 'package:timesheet/models/Domain.dart';
 
 // This is domain model class of TimeSheet. It defines the database fields and table
@@ -19,13 +21,13 @@ class TimeSheet implements Domain {
   // Constructor to take values from map where Date, ST, ET, WD are columns of
   // database table TimeSheet and assign to class variables Database -> TSModel
   TimeSheet.convertToTimeSheet(Map<String, dynamic> map) {
-    this._projectId = map["ProjectId"];
-    this._selectedDate = DateTime.parse(map["Date"]);
-    this._startTime = stringToTimeOfDay(map["ST"]);
-    this._endTime = stringToTimeOfDay(map["ET"]);
-    this._workDescription = map["WD"];
-    this._id = map["ID"];
-    this._numberOfhrs = map["HRS"];
+    this._projectId = map[TimesheetTable.ProjectId];
+    this._selectedDate = DateTime.parse(map[TimesheetTable.Date]);
+    this._startTime = stringToTimeOfDay(map[TimesheetTable.ST]);
+    this._endTime = stringToTimeOfDay(map[TimesheetTable.ET]);
+    this._workDescription = map[TimesheetTable.WD];
+    this._id = map[TimesheetTable.PKColumn];
+    this._numberOfhrs = map[TimesheetTable.Hrs];
   }
 
   static getNullObject() {
@@ -98,10 +100,10 @@ class TimeSheet implements Domain {
   @override
   Map<String, dynamic> mapForDBUpdate() {
     var updateMap = Map<String, dynamic>();
-    updateMap["Date"] = selectedDateStr;
-    updateMap["ST"] = timeOfDayToString(startTime);
-    updateMap["ET"] = timeOfDayToString(endTime);
-    updateMap["WD"] = workDescription;
+    updateMap[TimesheetTable.Date] = selectedDateStr;
+    updateMap[TimesheetTable.ST] = timeOfDayToString(startTime);
+    updateMap[TimesheetTable.ET] = timeOfDayToString(endTime);
+    updateMap[TimesheetTable.WD] = workDescription;
 
     int smin = startTime.hour * 60 + startTime.minute;
     int emin = endTime.hour * 60 + endTime.minute;

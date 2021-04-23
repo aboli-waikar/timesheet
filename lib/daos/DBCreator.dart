@@ -3,17 +3,19 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:timesheet/daos/ProjectDAO.dart';
-import 'package:timesheet/daos/TimesheetDAO.dart';
+import 'package:timesheet/daos/ProjectTable.dart';
+import 'package:timesheet/daos/TimesheetTable.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 class DbCreator {
   static Database _db;
   List<String> _createTableStatements;
 
+
   DbCreator() {
-    var projectDao = new ProjectDAO();
-    var timesheetDao = new TimesheetDAO();
-    _createTableStatements = [projectDao.createTableStatement, timesheetDao.createTableStatement];
+    _createTableStatements = [ProjectTable.CreateTableStatement, TimesheetTable.CreateTableStatement];
   }
 
   List<String> get createTableStatements => _createTableStatements;
@@ -29,7 +31,7 @@ class DbCreator {
     return _db;
   }
 
-  initDb() async {
+  Future<Database> initDb() async {
     print("_initializing db");
 
     Directory documentDirectory = await getApplicationDocumentsDirectory();
@@ -44,5 +46,11 @@ class DbCreator {
       await db.execute(statement);
     });
     print("Tables are created");
+    var storedUIDToken = await secureStorage.read(key: 'uid');
+    //var insertProjectMap = {ProjectTable.UserId: storedUIDToken, ProjectTable.Name: 'Default', ProjectTable.Company: 'Default', ProjectTable.Rate: 10};
+    var insertProjectMap = {'UserId': storedUIDToken, 'Name': 'Default', 'Company': 'Default', 'Rate': 10};
+    //var savedProjectId = await db.insert(ProjectTable.TableName, insertProjectMap);
+    int savedProjectId = await db.rawInsert("INSERT INTO ProjectTbl (UserId, Name, Company, Rate) VALUES ('$storedUIDToken', 'Default', 'Default', 10 )");
+    print("Project created: $savedProjectId");
   }
 }

@@ -1,3 +1,4 @@
+import 'package:timesheet/daos/ProjectTable.dart';
 import 'package:timesheet/models/Domain.dart';
 
 class Project implements Domain {
@@ -13,11 +14,11 @@ class Project implements Domain {
   // Constructor to take values from map where Date, ST, ET, WD are columns of
   // database table Project and assign to class variables Database -> TSModel
   Project.convertToProject(Map<String, dynamic> map) {
-    this._id = map["id"];
-    this._userId = map["userId"];
-    this._name = map["name"];
-    this._company = map["company"];
-    this._rate = map["rate"];
+    this._id = map[ProjectTable.PKColumn];
+    this._userId = map[ProjectTable.UserId];
+    this._name = map[ProjectTable.Name];
+    this._company = map[ProjectTable.Company];
+    this._rate = map[ProjectTable.Rate];
   }
 
   static getNullObject() {
@@ -63,9 +64,9 @@ class Project implements Domain {
   @override
   Map<String, dynamic> mapForDBUpdate() {
     var updateMap = Map<String, dynamic>();
-    updateMap["name"] = _name;
-    updateMap["company"] = _company;
-    updateMap["rate"] = _rate;
+    updateMap[ProjectTable.Name] = _name;
+    updateMap[ProjectTable.Company] = _company;
+    updateMap[ProjectTable.Rate] = _rate;
     return updateMap;
   }
 

@@ -3,6 +3,8 @@ import 'package:timesheet/views/TimesheetBarChart.dart';
 import 'ToDoList.dart';
 
 class Home extends StatelessWidget {
+  static String routeName = '/Home';
+
   Home();
 
   @override

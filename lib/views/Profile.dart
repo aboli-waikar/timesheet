@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'Login.dart';
 import 'Projects.dart';
 
@@ -11,16 +12,16 @@ const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Profile extends StatefulWidget {
+  static String routename = '/Profile';
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  var picture = CircleAvatar(backgroundColor: Colors.brown, child: Text('TS', style: TextStyle(
-    fontSize: 22),), maxRadius: 35,);
-  String name;
-  String email;
-
+  var picture = CircleAvatar(backgroundColor: Colors.brown, child: Text('TS', style: TextStyle(fontSize: 22),), maxRadius: 35,);
+  var imgUrl;
+  String name = '';
+  String email = '';
 
   @override
   void initState() {
@@ -33,8 +34,8 @@ class _ProfileState extends State<Profile> {
     final FirebaseUser user = await _auth.currentUser();
 
     setState(() {
-      picture = (user.photoUrl == null) ? picture : NetworkImage(user.photoUrl);
-      name = (user.displayName == null) ? 'Profile': user.displayName ;
+      imgUrl = user.photoUrl;
+      name = user.displayName;
       email = user.email;
     });
   }
@@ -44,8 +45,7 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
+              gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
         ),
         title: Text('Profile', style: TextStyle(fontSize: 16.0)),
         actions: [
@@ -60,8 +60,7 @@ class _ProfileState extends State<Profile> {
               final String uid = user.email;
               await secureStorage.delete(key: 'uid');
               Scaffold.of(context).showSnackBar(SnackBar(content: Text('User $uid has successfully signed out.')));
-              Navigator.pushAndRemoveUntil(
-                  context, MaterialPageRoute(builder: (BuildContext context) => Login()), ModalRoute.withName('/'));
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => Login()), ModalRoute.withName('/'));
             },
             child: Text(
               'Sign out',
@@ -82,8 +81,12 @@ class _ProfileState extends State<Profile> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0, bottom: 10.0, top: 10.0),
-                      child: picture,
+                      child: CircleAvatar(
+                        maxRadius: 30,
+                        backgroundImage: imgUrl != null ? NetworkImage(imgUrl) : null,
+                        child: imgUrl == null ? picture : Container(),
                       ),
+                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -113,5 +116,3 @@ class _ProfileState extends State<Profile> {
     );
   }
 }
-
-

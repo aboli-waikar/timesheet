@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:timesheet/views/NavigateMenus.dart';
 import 'package:timesheet/views/NewUserRegistration.dart';
-import 'Profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -130,7 +130,7 @@ class _LoginState extends State<Login> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                                     onPressed: () async {
                                       if (_formKey.currentState.validate()) {
-                                        _register();
+                                        _loginWithEmail();
                                       }
                                     }),
                               ),
@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                               ),
-                              onTap: () => null,
+                              onTap: () => signInWithGoogle(),
                             ),
                           )
                         ],
@@ -209,16 +209,15 @@ class _LoginState extends State<Login> {
     _passwordController.text = '';
   }
 
-  void _register() async {
-    debugPrint("In register");
+  void _loginWithEmail() async {
+    debugPrint("In loginwithEmail");
 
-    AuthResult x =
-        await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+    AuthResult x = await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
     final FirebaseUser User = x.user;
     await secureStorage.write(key: 'uid', value: User.uid);
 
     final String storedUIDToken = await secureStorage.read(key: 'uid');
-    debugPrint('From Login: $storedUIDToken');
+    debugPrint('From _loginWithEmail: $storedUIDToken');
 
     if (User != null) {
       setState(() {
@@ -234,4 +233,32 @@ class _LoginState extends State<Login> {
       });
     }
   }
+
+  void signInWithGoogle() async{
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential googleAuthCredential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+    AuthResult x = await _auth.signInWithCredential(googleAuthCredential);
+    final FirebaseUser User = x.user;
+    await secureStorage.write(key: 'uid', value: User.uid);
+    final storedUIDToken = await secureStorage.read(key: 'uid');
+    debugPrint('From signInWithGoogle: $storedUIDToken');
+
+    if (User != null) {
+      setState(() {
+        _success = true;
+        _userEmail = User.email;
+        clearForm();
+        Navigator.push(context, MaterialPageRoute(builder: (context) => NavigateMenus()));
+      });
+    } else {
+      setState(() {
+        _success = false;
+        debugPrint(_success.toString());
+      });
+    }
+
+  }
+
 }

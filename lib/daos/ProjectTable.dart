@@ -9,4 +9,6 @@ class ProjectTable {
   static const String PKColumn = "ID";
 
   static const String ColNamesWithDbTypes = "$UserId TEXT, $Name TEXT, $Company TEXT, $Rate INT";
+
+  static const String CreateTableStatement = "CREATE TABLE $TableName($PKColumn INTEGER PRIMARY KEY, $ColNamesWithDbTypes)";
 }

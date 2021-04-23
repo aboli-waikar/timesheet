@@ -13,4 +13,6 @@ class TimesheetTable {
 
   static const String ColNamesWithDbTypes =
       "$ProjectId INT, $Date TEXT, $ST TEXT, $ET TEXT, $WD TEXT, $Hrs INT, $Project PR";
+
+  static const String CreateTableStatement = "CREATE TABLE $TableName($PKColumn INTEGER PRIMARY KEY, $ColNamesWithDbTypes)";
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Expenses extends StatelessWidget {
+  static String routename = '/Expenses';
   Expenses();
 
   @override

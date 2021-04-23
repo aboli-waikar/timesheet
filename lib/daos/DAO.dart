@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:timesheet/daos/DBCreator.dart';
-import 'package:timesheet/daos/ProjectDAO.dart';
 import 'package:timesheet/models/Domain.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -38,24 +37,8 @@ class DAO<T extends Domain> {
 
   Future<Database> get db async {
     var dbc = new DbCreator();
-    dbc.initDb();
+    return dbc.initDb();
   }
-
-  //
-  // initDb() async {
-  //   print("_initializing db");
-  //
-  //   Directory documentDirectory = await getApplicationDocumentsDirectory();
-  //   String path = join(documentDirectory.path, "notodo_db.db");
-  //   var ourDb = await openDatabase(path, version: 1, onCreate: _onCreate);
-  //   return ourDb;
-  // }
-  //
-  // void _onCreate(Database db, int version) async {
-  //   //await db.execute("CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)");
-  //   await db.execute ("CREATE TABLE ProjectTbl(ID INTEGER PRIMARY KEY, UserId TEXT, Name TEXT, Company TEXT, Rate INT)");
-  //   await db.execute ("CREATE TABLE TimeSheetTbl(ID INTEGER PRIMARY KEY, ProjectId INT, Date TEXT, ST TEXT, ET TEXT, WD TEXT, HRS INT, PR TEXT)");
-  // }
 
   Future<List> getAll(String sortColumn) async {
     var dbClient = await db;

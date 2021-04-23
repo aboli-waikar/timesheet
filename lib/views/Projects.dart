@@ -4,8 +4,10 @@ import 'package:timesheet/daos/ProjectDAO.dart';
 import 'package:timesheet/models/Project.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
+import 'PageRoutes.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
 
 class Projects extends StatefulWidget {
   @override
@@ -23,17 +25,10 @@ class ProjectsState extends State<Projects> {
   TextEditingController projecthourlyrateController = TextEditingController();
   
   Future<List<Project>> getProject() async {
-    final String storedUIDToken = await secureStorage.read(key: 'uid');
+    //debugPrint("In getProject");
     List prMapList = await prDAO.getAll(prDAO.pkColumn);
-    List<Project> prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
-    if (prModels == null) {
-      var prDefModel = Project(storedUIDToken, 'Default', 'Default', 10);
-      await prDAO.insert(prDefModel);
-      prMapList = await prDAO.getAll(prDAO.pkColumn);
-      prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
-      return prModels;
-    }
-    else
+    List<Project> prModels = prMapList.map((e) => Project.convertToProject(e)).toList();
+    //debugPrint("In view Projects-GetProject: $prModels");
     return prModels;
   }
 
@@ -45,8 +40,6 @@ class ProjectsState extends State<Projects> {
   }
 
   editProject() {  }
-
-  deleteProject() {  }
 
   showProjectDialog(BuildContext context) {
     num hourlyrate;
@@ -61,13 +54,15 @@ class ProjectsState extends State<Projects> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextField(
-                  controller: projectcompanyController,
-                  decoration: InputDecoration(labelText: 'Company Name'),
-                ),
-                TextField(
                   controller: projectnameController,
                   decoration: InputDecoration(labelText: 'Project Name'),
                 ),
+
+                TextField(
+                  controller: projectcompanyController,
+                  decoration: InputDecoration(labelText: 'Company Name'),
+                ),
+
                 TextField(
                   controller: projecthourlyrateController,
                   keyboardType: TextInputType.number,
@@ -80,8 +75,13 @@ class ProjectsState extends State<Projects> {
                   children: [
                     FlatButton(
                         onPressed: () {
-                          addProject(projectcompanyController.text, projectnameController.text, hourlyrate);
+                          addProject(projectnameController.text, projectcompanyController.text, hourlyrate);
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
+                          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Profile()), (route) => false);
+                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Profile()));
                           Navigator.pop(context);
+                          //Use PushReplacementNamed method to go back to the root page without back arrow in Appbar.
+                          Navigator.pushReplacementNamed(context, PageRoutes.profile);
                         },
                         child: Text('Add Project')),
                     FlatButton(onPressed: null, child: Text('Cancel')),
@@ -124,7 +124,10 @@ Widget build(BuildContext context) {
                     visualDensity: VisualDensity(vertical: -4.0),
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
-                      onPressed: deleteProject(),
+                      onPressed: () async {
+                        await prDAO.delete(snapshot.data[index].id);
+                        Navigator.pushReplacementNamed(context, '/');
+                      },
                     ),
                     onTap: editProject() //edit the project,
                 );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:timesheet/daos/TimesheetTable.dart';
 import '../models/ChartViewModel.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 import '../daos/TimesheetDAO.dart';
@@ -22,14 +23,13 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   var selectedMonth = DateTime.now();
   var prDAO = ProjectDAO();
   var prModel = Project.getNullObject();
-  var projectList;
+  var projectList = [''];
 
   @override
   void initState() {
     super.initState();
-    getProjectList();
     getTSData();
-
+    getProjectList();
   }
 
   getMonth(DateTime dT) {
@@ -45,8 +45,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   }
 
   Future<void> selectMonth(BuildContext context) async {
-    final DateTime d = await showMonthPicker(
-        context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
+    final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
     setState(() {
       selectedMonth = d;
       getTSData();
@@ -54,28 +53,17 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
   }
 
   Future getProjectList() async {
-
-    final String storedUIDToken = await secureStorage.read(key: 'uid');
+    debugPrint("In getProjectList");
     List prMapList = await prDAO.getAll(prDAO.pkColumn);
-
-    if (prMapList == null) {
-      List<Project> prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
-      var prDefModel = Project(storedUIDToken, 'Default', 'Default', 10);
-      await prDAO.insert(prDefModel);
-      debugPrint(prDefModel.name);
-      prMapList = await prDAO.getAll(prDAO.pkColumn);
-      prModels = prMapList.map((e)=> Project.convertToProject(e)).toList();
-      projectList = prModels.map((e) => e.name).toList();
-      debugPrint(projectList.toString());
-      return projectList;
-    }
-    else
-      return projectList;
+    List<Project> prModels = prMapList.map((e) => Project.convertToProject(e)).toList();
+    projectList = prModels.map((e) => e.name).toList();
+    debugPrint(projectList.toString());
+    return projectList;
   }
 
   Future getTSData() async {
     final tsDAO = TimesheetDAO();
-    List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
+    List tsMapList = await tsDAO.getAll(TimesheetTable.Date); //store data retrieved from db to a variable
     var tsModels = tsMapList.map((e) => TimeSheet.convertToTimeSheet(e)).toList();
     //debugPrint(tsModels.join(", ").toString());
 
@@ -112,8 +100,8 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
           child: Charts.TimeSeriesChart(
             seriesList,
             animate: true,
-            defaultRenderer: Charts.BarRendererConfig<DateTime>(
-                groupingType: Charts.BarGroupingType.stacked, cornerStrategy: Charts.ConstCornerStrategy(2)),
+            defaultRenderer:
+                Charts.BarRendererConfig<DateTime>(groupingType: Charts.BarGroupingType.stacked, cornerStrategy: Charts.ConstCornerStrategy(2)),
             domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
           ),
         ),
@@ -136,8 +124,7 @@ class _TimesheetBarChartState extends State<TimesheetBarChart> {
         appBar: AppBar(
           flexibleSpace: Container(
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
+                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
           ),
           title: Text(
             "Home",

@@ -212,8 +212,7 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
   void _register() async {
     debugPrint("In register");
 
-    AuthResult x =
-        await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+    AuthResult x = await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
     final FirebaseUser User = x.user;
     await secureStorage.write(key: 'uid', value: User.uid);
     debugPrint(User.uid);
