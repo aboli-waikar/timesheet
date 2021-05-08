@@ -13,6 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   //above 2 lines are required because of Firebase integration
+
   runApp(const TimeSheetApp());
 }
 
