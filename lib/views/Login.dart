@@ -21,9 +21,9 @@ class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+
   bool _success;
-  String _userEmail;
+  String userEmail;
   bool showPassword = true;
 
   var _auth = FirebaseAuth.instance;
@@ -125,9 +125,9 @@ class _LoginState extends State<Login> {
                               Container(
                                 //padding: EdgeInsets.all(1.0),
                                 alignment: Alignment.center,
-                                child: RaisedButton(
+                                child: ElevatedButton(
                                     child: Text('Submit'),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                    style: ButtonStyle(shape: MaterialStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)))),
                                     onPressed: () async {
                                       if (_formKey.currentState.validate()) {
                                         _loginWithEmail();
@@ -137,13 +137,14 @@ class _LoginState extends State<Login> {
                               Container(
                                   //padding: EdgeInsets.all(1.0),
                                   alignment: Alignment.center,
-                                  child: RaisedButton(
+                                  child: ElevatedButton(
                                       child: Text(
                                         'Sign Up',
                                         style: TextStyle(color: Colors.white),
                                       ),
-                                      color: Colors.lightBlue,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.lightBlue),
+                                      shape: MaterialStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)))
+                                      ),
                                       onPressed: () {
                                         Navigator.push(
                                             context, MaterialPageRoute(builder: (context) => NewUserRegistration()));
@@ -212,17 +213,17 @@ class _LoginState extends State<Login> {
   void _loginWithEmail() async {
     debugPrint("In loginwithEmail");
 
-    AuthResult x = await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-    final FirebaseUser User = x.user;
-    await secureStorage.write(key: 'uid', value: User.uid);
+    var x = await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+    final emailUsr = x.user;
+    await secureStorage.write(key: 'uid', value: emailUsr.uid);
 
     final String storedUIDToken = await secureStorage.read(key: 'uid');
     debugPrint('From _loginWithEmail: $storedUIDToken');
 
-    if (User != null) {
+    if (emailUsr != null) {
       setState(() {
         _success = true;
-        _userEmail = User.email;
+        userEmail = emailUsr.email;
         clearForm();
         Navigator.push(context, MaterialPageRoute(builder: (context) => NavigateMenus()));
       });
@@ -235,20 +236,37 @@ class _LoginState extends State<Login> {
   }
 
   void signInWithGoogle() async{
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    final AuthCredential googleAuthCredential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
 
-    AuthResult x = await _auth.signInWithCredential(googleAuthCredential);
-    final FirebaseUser User = x.user;
-    await secureStorage.write(key: 'uid', value: User.uid);
+    GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
+
+    _handleSignIn() async {
+      try {
+        await _googleSignIn.signIn();
+      } catch (error) {
+        print(error);
+      }
+    }
+
+    //final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount googleUser = await _handleSignIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential googleAuthCredential = GoogleAuthProvider.credential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+    var x = await _auth.signInWithCredential(googleAuthCredential);
+    final googleUsr = x.user;
+    await secureStorage.write(key: 'uid', value: googleUsr.uid);
     final storedUIDToken = await secureStorage.read(key: 'uid');
     debugPrint('From signInWithGoogle: $storedUIDToken');
 
-    if (User != null) {
+    if (googleUsr != null) {
       setState(() {
         _success = true;
-        _userEmail = User.email;
+        userEmail = googleUsr.email;
         clearForm();
         Navigator.push(context, MaterialPageRoute(builder: (context) => NavigateMenus()));
       });

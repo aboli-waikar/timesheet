@@ -140,9 +140,9 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
                           Container(
                             //padding: EdgeInsets.all(1.0),
                             alignment: Alignment.center,
-                            child: RaisedButton(
+                            child: ElevatedButton(
                                 child: Text('Register'),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                style: ButtonStyle(shape: MaterialStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)))),
                                 onPressed: () async {
                                   if (_formKey.currentState.validate()) {
                                     _register();
@@ -212,15 +212,15 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
   void _register() async {
     debugPrint("In register");
 
-    AuthResult x = await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-    final FirebaseUser User = x.user;
-    await secureStorage.write(key: 'uid', value: User.uid);
-    debugPrint(User.uid);
+    var x = await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+    final emailUsr = x.user;
+    await secureStorage.write(key: 'uid', value: emailUsr.uid);
+    debugPrint(emailUsr.uid);
 
-    if (User != null) {
+    if (emailUsr != null) {
       setState(() {
         _success = true;
-        _userEmail = User.email;
+        _userEmail = emailUsr.email;
         clearForm();
         Navigator.push(context, MaterialPageRoute(builder: (context) => NavigateMenus()));
       });

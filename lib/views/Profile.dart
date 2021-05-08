@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'Login.dart';
 import 'Projects.dart';
 
@@ -31,10 +30,10 @@ class _ProfileState extends State<Profile> {
 
   getFirebaseUser() async {
     debugPrint("getFirebaseUser");
-    final FirebaseUser user = await _auth.currentUser();
+    final user = _auth.currentUser;
 
     setState(() {
-      imgUrl = user.photoUrl;
+      imgUrl = user.photoURL;
       name = user.displayName;
       email = user.email;
     });
@@ -49,17 +48,17 @@ class _ProfileState extends State<Profile> {
         ),
         title: Text('Profile', style: TextStyle(fontSize: 16.0)),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () async {
-              final FirebaseUser user = await _auth.currentUser();
+              final user = _auth.currentUser;
               if (user == null) {
-                Scaffold.of(context).showSnackBar(SnackBar(content: Text('No one has signed in')));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No one has signed in')));
                 return;
               }
               await _auth.signOut();
               final String uid = user.email;
               await secureStorage.delete(key: 'uid');
-              Scaffold.of(context).showSnackBar(SnackBar(content: Text('User $uid has successfully signed out.')));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User $uid has successfully signed out.')));
               Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => Login()), ModalRoute.withName('/'));
             },
             child: Text(

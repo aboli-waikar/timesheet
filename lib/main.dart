@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:timesheet/views/Login.dart';
 import 'package:timesheet/views/NavigateMenus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 /// -----------------------------------
 ///                 App
 /// -----------------------------------
-void main() => runApp(const TimeSheetApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  //above 2 lines are required because of Firebase integration
+  runApp(const TimeSheetApp());
+}
 
 class TimeSheetApp extends StatefulWidget {
   const TimeSheetApp({Key key}) : super(key: key);
