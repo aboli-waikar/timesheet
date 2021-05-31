@@ -1,6 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:timesheet/views/Home.dart';
+import 'Home.dart';
 import 'package:timesheet/views/Profile.dart';
 import 'package:timesheet/views/ReadTimeSheet.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -114,108 +113,110 @@ class _NavigateMenusState extends State<NavigateMenus> {
       )),
       context: context,
       builder: (context) {
-        return Container(
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: [
-              Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Timesheet",
-                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+        return SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Timesheet",
+                          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Divider(
-                      height: 2.0,
-                      color: Colors.black,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                            //color: Colors.deepOrange,
-                            height: 100,
-                            width: 100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: RaisedButton(
-                                  child: Image.asset(
-                                    "images/CreateTimeSheet.png",
-                                    height: 100,
-                                    width: 100,
-                                    alignment: Alignment.center,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
-                                  }),
-                            )),
-                        Container(
-                            //color: Colors.deepOrange,
-                            height: 100,
-                            width: 100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: RaisedButton(
-                                  child: Image.asset(
-                                    "images/StartTimer.png",
-                                    height: 100,
-                                    width: 100,
-                                    alignment: Alignment.center,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
-                                  }),
-                            )),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Project",
-                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Divider(
-                      height: 2.0,
-                      color: Colors.black,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                            //color: Colors.deepOrange,
-                            height: 100,
-                            width: 100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: RaisedButton(
-                                  child: Image.asset(
-                                    "images/CreateProject.png",
-                                    height: 100,
-                                    width: 100,
-                                    alignment: Alignment.center,
-                                  ),
-                                  onPressed: () => pr.showProjectDialog(context),
-
-                                  ),
-                            )),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0, bottom: 40.0),
-                      child: Divider(
+                      Divider(
                         height: 2.0,
                         color: Colors.black,
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      Row(
+                        children: [
+                          Container(
+                              //color: Colors.deepOrange,
+                              height: 100,
+                              width: 100,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: ElevatedButton(
+                                    child: Image.asset(
+                                      "images/CreateTimeSheet.png",
+                                      height: 100,
+                                      width: 100,
+                                      alignment: Alignment.center,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
+                                    }),
+                              )),
+                          Container(
+                              //color: Colors.deepOrange,
+                              height: 100,
+                              width: 100,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: ElevatedButton(
+                                    child: Image.asset(
+                                      "images/StartTimer.png",
+                                      height: 100,
+                                      width: 100,
+                                      alignment: Alignment.center,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet.defaultModel()));
+                                    }),
+                              )),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Project",
+                          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Divider(
+                        height: 2.0,
+                        color: Colors.black,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                              //color: Colors.deepOrange,
+                              height: 100,
+                              width: 100,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: ElevatedButton(
+                                    child: Image.asset(
+                                      "images/CreateProject.png",
+                                      height: 100,
+                                      width: 100,
+                                      alignment: Alignment.center,
+                                    ),
+                                    onPressed: () => pr.showProjectDialog(context),
+
+                                    ),
+                              )),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0, bottom: 40.0),
+                        child: Divider(
+                          height: 2.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },

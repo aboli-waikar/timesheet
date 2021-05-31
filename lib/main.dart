@@ -49,6 +49,9 @@ class _TimeSheetAppState extends State<TimeSheetApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TimeSheet',
+      theme: ThemeData(
+        scrollbarTheme: ScrollbarThemeData(thumbColor: MaterialStateProperty.all(Colors.black)),
+      ),
       home: Scaffold(
         body: Center(
           child: isBusy

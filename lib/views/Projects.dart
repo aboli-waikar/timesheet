@@ -73,7 +73,7 @@ class ProjectsState extends State<Projects> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    FlatButton(
+                    TextButton(
                         onPressed: () {
                           addProject(projectnameController.text, projectcompanyController.text, hourlyrate);
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
@@ -84,7 +84,7 @@ class ProjectsState extends State<Projects> {
                           Navigator.pushReplacementNamed(context, PageRoutes.profile);
                         },
                         child: Text('Add Project')),
-                    FlatButton(onPressed: null, child: Text('Cancel')),
+                    TextButton(onPressed: () => Navigator.of(context), child: Text('Cancel')),
                   ],
                 )
               ],

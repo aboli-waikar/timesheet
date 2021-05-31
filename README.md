@@ -38,3 +38,7 @@ A widget may extend a StatefulWidget, or a StatelessWidget.
          android:src="@drawable/ic_launcher" />
      </item>
 
+# Features to be implemented
+1. Start Timer
+2. Expenses
+3. To Do List
