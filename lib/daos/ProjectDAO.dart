@@ -17,7 +17,7 @@ class ProjectDAO extends DAO<Project> {
     var dbClient = await db;
     var result = await dbClient.query(
       "$tableName",
-      where: "$userId",
+      where: "${ProjectTable.UserId}",
       whereArgs: [userId],
       orderBy: "$sortColumn DESC",
     );

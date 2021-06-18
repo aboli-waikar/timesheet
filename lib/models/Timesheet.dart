@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:timesheet/daos/ProjectTable.dart';
 import 'package:timesheet/daos/TimesheetTable.dart';
 import 'package:timesheet/models/Domain.dart';
+import 'Project.dart';
+import '../daos/ProjectDAO.dart';
 
 // This is domain model class of TimeSheet. It defines the database fields and table
 
@@ -14,6 +16,8 @@ class TimeSheet implements Domain {
   TimeOfDay _endTime;
   String _workDescription;
   num _numberOfhrs;
+  Project _project;
+  final prDAO = ProjectDAO();
 
   // Constructor to pass the values taken from User
   TimeSheet(this._projectId, this._selectedDate, this._startTime, this._endTime, this._workDescription);
@@ -84,6 +88,18 @@ class TimeSheet implements Domain {
 
   num get hrs => _numberOfhrs;
 
+  Project getProject() {
+    if(_project == null) {
+      prDAO.getById(projectId).then((projectRow) {
+        Project project = Project.convertToProject(projectRow);
+        _project = project;
+        return _project;
+      });
+    }
+
+    return _project;
+  }
+
   // Domain class is expecting to override toMap and toUpdateMap methods. These
   // methods are used to take values from User and populate map. TSModel -> Map -> DB
   @override
@@ -112,6 +128,7 @@ class TimeSheet implements Domain {
     //debugPrint('$_numberOfhrs');
 
     updateMap["HRS"] = (_numberOfhrs == 0.0) ? 0.0 : _numberOfhrs;
+    updateMap[TimesheetTable.ProjectId] = projectId;
     return updateMap;
   }
 

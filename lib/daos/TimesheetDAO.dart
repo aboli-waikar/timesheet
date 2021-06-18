@@ -1,4 +1,5 @@
 import 'package:timesheet/daos/DAO.dart';
+import 'package:timesheet/daos/ProjectTable.dart';
 import 'package:timesheet/daos/TimesheetTable.dart';
 import '../models/Timesheet.dart';
 import 'package:sqflite/sqflite.dart';
@@ -13,13 +14,13 @@ class TimesheetDAO extends DAO<TimeSheet> {
   @override
   String get colNamesWithDbTypes => TimesheetTable.ColNamesWithDbTypes;
 
-  Future<List> getAllForProject(String projectId, String sortColumn) async {
+  Future<List> getAllForProject(int projectId, String sortColumn) async {
     var dbClient = await db;
     var result = await dbClient.query(
       "${TimesheetTable.TableName}",
-      where: "$projectId",
-      whereArgs: [projectId],
-      orderBy: "$sortColumn DESC",
+      where: "${TimesheetTable.ProjectId} = projectID"
+      //whereArgs: [projectId],
+      //orderBy: "$sortColumn DESC",
     );
     var res = result.toList();
     //print(res);

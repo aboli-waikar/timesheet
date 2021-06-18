@@ -51,6 +51,13 @@ class Project implements Domain {
     this._rate = rate;
   }
 
+  String get displayName => '$_id-$_name';
+
+  static int getProjectID(String displayName) {
+    List<String> y = displayName.split('-');
+    return int.parse(y[0]);
+  }
+
   @override
   Map<String, dynamic> mapForDBInsert() {
     var m = mapForDBUpdate();
@@ -64,6 +71,7 @@ class Project implements Domain {
   @override
   Map<String, dynamic> mapForDBUpdate() {
     var updateMap = Map<String, dynamic>();
+    updateMap[ProjectTable.UserId] = _userId;
     updateMap[ProjectTable.Name] = _name;
     updateMap[ProjectTable.Company] = _company;
     updateMap[ProjectTable.Rate] = _rate;

@@ -251,7 +251,6 @@ class _LoginState extends State<Login> {
         print(error);
       }
     }
-
     //final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAccount googleUser = await _handleSignIn();
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;

@@ -8,6 +8,8 @@ import 'InsertUpdateTimeSheet.dart';
 import '../daos/TimesheetDAO.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import '../daos/ProjectDAO.dart';
+import '../models/Project.dart';
 
 class ReadTimeSheet extends StatefulWidget {
   static String routeName = '/ReadTimeSheet';
@@ -17,10 +19,12 @@ class ReadTimeSheet extends StatefulWidget {
 
 class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
+  final prDAO = ProjectDAO();
   List<DeleteTimeSheetViewModel> listDelTSViewModel;
   List<TimeSheet> timesheetModels;
   //var selectedMonth = DateTime.now();
   var selectedMonth;
+  var displayName = '';
 
   Future<List<DeleteTimeSheetViewModel>> getTSData() async {
     debugPrint(selectedMonth.toString());
@@ -40,9 +44,17 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
     }
   }
 
+  Future<String> getProjectName(int id) async {
+    Map<String, dynamic> prMap = await prDAO.getById(id);
+    Project pr = Project.convertToProject(prMap);
+    String _displayName = pr.displayName;
+    return _displayName;
+  }
+
   void copyData(List<DeleteTimeSheetViewModel> initialData) {
     if (listDelTSViewModel == null) {
       listDelTSViewModel = initialData;
+      debugPrint('Initial Data: ${initialData.toString()}');
     }
   }
 
@@ -203,7 +215,6 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
         future: getTSData(),
         builder: (context, snapshot) {
           copyData(snapshot.data);
-
           if (snapshot.data == null) {
             return Container(
               child: Center(
@@ -227,6 +238,13 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                       },
                     ),
                     title: Column(children: [
+                      Row(
+                        children: [
+                          Text("Project ID: ", style: TextStyle(fontSize: 13.0)),
+                          Text(snapshot.data[index].tsModel.projectId.toString(), style: TextStyle(fontSize: 13.0)),
+                          //Text(snapshot.data[index].tsModel.getProject().displayName, style: TextStyle(fontSize: 13.0)),
+                        ],
+                      ),
                       Row(
                         children: [
                           Text("Date: ", style: TextStyle(fontSize: 13.0)),

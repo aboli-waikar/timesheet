@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
   }
 
   Future getProjectList() async {
-    debugPrint("In getProjectList");
+    debugPrint("Home - In getProjectList");
     List prMapList = await prDAO.getAll(prDAO.pkColumn);
     List<Project> prModels = prMapList.map((e) => Project.convertToProject(e)).toList();
     projectList = prModels.map((e) => e.name).toList();
@@ -104,7 +104,7 @@ class _HomeState extends State<Home> {
             seriesList,
             animate: true,
             defaultRenderer:
-            Charts.BarRendererConfig<DateTime>(groupingType: Charts.BarGroupingType.stacked, cornerStrategy: Charts.ConstCornerStrategy(2)),
+                Charts.BarRendererConfig<DateTime>(groupingType: Charts.BarGroupingType.stacked, cornerStrategy: Charts.ConstCornerStrategy(2)),
             domainAxis: Charts.DateTimeAxisSpec(tickProviderSpec: Charts.DayTickProviderSpec(increments: [2])),
           ),
         ),
@@ -112,9 +112,9 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.all(8.0),
           child: Center(
               child: Text(
-                "$currentMonth: $totalHrs hours",
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12),
-              )),
+            "$currentMonth: $totalHrs hours",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12),
+          )),
         ),
       ],
     );
@@ -129,15 +129,9 @@ class _HomeState extends State<Home> {
             decoration: BoxDecoration(
                 gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
           ),
-          title: Text(
-            "Home",
-            style: TextStyle(fontSize: 16.0),
-          ),
+          title: Text("Home", style: TextStyle(fontSize: 16.0)),
           actions: [
-            IconButton(
-              icon: Icon(Icons.calendar_today, color: Colors.white),
-              onPressed: () => selectMonth(context),
-            ),
+            IconButton(icon: Icon(Icons.calendar_today, color: Colors.white), onPressed: () => selectMonth(context)),
           ],
         ),
         body: ListView(
@@ -157,7 +151,7 @@ class _HomeState extends State<Home> {
                       ClipRRect(
                           borderRadius: BorderRadius.circular(5.0),
                           child: Container(
-                            //color: Theme.of(context).colorScheme.background,
+                              //color: Theme.of(context).colorScheme.background,
                               padding: MediaQuery.of(context).padding,
                               child: getTSChart(),
                               height: 185,

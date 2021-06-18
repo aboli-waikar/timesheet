@@ -32,7 +32,7 @@ class DbCreator {
   }
 
   Future<Database> initDb() async {
-    print("_initializing db");
+    print("DBCreator - _initializing db");
 
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentDirectory.path, "notodo_db.db");
@@ -43,6 +43,7 @@ class DbCreator {
   void _onCreate(Database db, int version) async {
     // await db.execute("CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)");
     _createTableStatements.forEach((statement) async {
+      print(statement);
       await db.execute(statement);
     });
     print("Tables are created");

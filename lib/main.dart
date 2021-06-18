@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:timesheet/views/Login.dart';
-import 'package:timesheet/views/NavigateMenus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:timesheet/views/NavigateMenus.dart';
+import 'package:timesheet/views/PageRoutes.dart';
+import 'package:timesheet/views/Profile.dart';
+import 'package:timesheet/views/ReadTimeSheet.dart';
+import 'package:timesheet/views/Expenses.dart';
+import 'package:timesheet/views/Home.dart';
+import 'package:timesheet/views/Login.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -61,6 +66,13 @@ class _TimeSheetAppState extends State<TimeSheetApp> {
                   : Login(),
         ),
       ),
+        routes: {
+          PageRoutes.login: (context) => Login(),
+          PageRoutes.home: (context) => Home(),
+          PageRoutes.readTimeSheet: (context) => ReadTimeSheet(),
+          PageRoutes.expenses: (context) => Expenses(),
+          PageRoutes.profile: (context) => Profile(),
+        }
     );
   }
 }

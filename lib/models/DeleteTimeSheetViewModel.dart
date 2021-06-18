@@ -3,6 +3,7 @@ import 'package:timesheet/models/Timesheet.dart';
 class DeleteTimeSheetViewModel {
   TimeSheet tsModel;
   bool isDelete;
+  String name;
 
   DeleteTimeSheetViewModel(this.tsModel, this.isDelete);
 

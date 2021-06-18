@@ -1,9 +1,6 @@
-import 'dart:io';
 import 'package:timesheet/daos/DBCreator.dart';
 import 'package:timesheet/models/Domain.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 
 class DAO<T extends Domain> {
@@ -56,15 +53,17 @@ class DAO<T extends Domain> {
     return Sqflite.firstIntValue(await dbClient.rawQuery("SELECT COUNT(*) FROM $tableName"));
   }
 
-  Future<Map<String, dynamic>> getById(int id) async {
+  Future<Map<String, dynamic>> getById(int id, {String query = ''}) async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE id = $id");
+    var defaultQuery = "SELECT * FROM $tableName WHERE id = $id";
+    var actualQuery = query == '' ? defaultQuery : query;
+    var result = await dbClient.rawQuery(actualQuery);
     if (result.length == 0) return null;
     return result.first;
   }
 
   Future<int> insert(T t) async {
-    print("inserting: $t");
+    print("DAO - inserting: $t");
     var dbClient = await db;
     int res = await dbClient.insert("$tableName", t.mapForDBInsert());
     print(res.toString());

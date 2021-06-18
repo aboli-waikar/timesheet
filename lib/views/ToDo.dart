@@ -18,7 +18,6 @@ class _ToDoState extends State<ToDo> {
       child: ExpansionTile(
         initiallyExpanded: true,
         title: Text('THINGS TO DO'),
-
         trailing: IconButton(icon: Icon(Icons.add), onPressed: () {
           showDialog(context: context,
               builder: (context) {
@@ -53,7 +52,7 @@ class _ToDoState extends State<ToDo> {
             itemCount: toDoList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                  tileColor: Colors.lime,
+                  tileColor: Colors.lightBlueAccent,
                   title: Text(toDoList[index]),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),

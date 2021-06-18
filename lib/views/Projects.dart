@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:timesheet/daos/ProjectDAO.dart';
+import 'package:timesheet/daos/TimesheetDAO.dart';
 import 'package:timesheet/models/Project.dart';
+import 'package:timesheet/models/Timesheet.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
 import 'PageRoutes.dart';
+import 'NavigateMenus.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
-
 
 class Projects extends StatefulWidget {
   @override
@@ -16,30 +18,41 @@ class Projects extends StatefulWidget {
 
 class ProjectsState extends State<Projects> {
   @override
-
   var prDAO = ProjectDAO();
+  var tsDAO = TimesheetDAO();
   var prModel = Project.getNullObject();
+  var tsModel = TimeSheet.getNullObject();
 
   TextEditingController projectnameController = TextEditingController();
   TextEditingController projectcompanyController = TextEditingController();
   TextEditingController projecthourlyrateController = TextEditingController();
-  
+
   Future<List<Project>> getProject() async {
     //debugPrint("In getProject");
     List prMapList = await prDAO.getAll(prDAO.pkColumn);
     List<Project> prModels = prMapList.map((e) => Project.convertToProject(e)).toList();
-    //debugPrint("In view Projects-GetProject: $prModels");
+    debugPrint("Projects - prModel: ${prModels.toString()}");
     return prModels;
   }
 
   addProject(String name, String company, num rate) async {
     final String storedUIDToken = await secureStorage.read(key: 'uid');
+    debugPrint(storedUIDToken);
     prModel = Project(storedUIDToken, name, company, rate);
     var savedProjectId = await prDAO.insert(prModel);
     debugPrint('$savedProjectId');
   }
 
-  editProject() {  }
+  editProject() {}
+
+  deleteProjectWithTS(int id) async {
+    var tsMapList = await tsDAO.getAllForProject(id, tsDAO.pkColumn);
+    List<TimeSheet> tsModels = tsMapList.map((e) => TimeSheet.convertToTimeSheet(e)).toList();
+    debugPrint("Projects - tsModel: ${tsModels.toString()}");
+    List tsModelIds = tsModels.map((e) => e.id).toList();
+    tsModelIds.forEach((element) async {await tsDAO.delete(element);});
+    await prDAO.delete(id);
+  }
 
   showProjectDialog(BuildContext context) {
     num hourlyrate;
@@ -57,12 +70,10 @@ class ProjectsState extends State<Projects> {
                   controller: projectnameController,
                   decoration: InputDecoration(labelText: 'Project Name'),
                 ),
-
                 TextField(
                   controller: projectcompanyController,
                   decoration: InputDecoration(labelText: 'Company Name'),
                 ),
-
                 TextField(
                   controller: projecthourlyrateController,
                   keyboardType: TextInputType.number,
@@ -76,15 +87,12 @@ class ProjectsState extends State<Projects> {
                     TextButton(
                         onPressed: () {
                           addProject(projectnameController.text, projectcompanyController.text, hourlyrate);
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
-                          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Profile()), (route) => false);
-                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Profile()));
                           Navigator.pop(context);
-                          //Use PushReplacementNamed method to go back to the root page without back arrow in Appbar.
-                          Navigator.pushReplacementNamed(context, PageRoutes.profile);
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => NavigateMenus()));
                         },
                         child: Text('Add Project')),
-                    TextButton(onPressed: () => Navigator.of(context), child: Text('Cancel')),
+                    TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
                   ],
                 )
               ],
@@ -95,7 +103,7 @@ class ProjectsState extends State<Projects> {
     );
   }
 
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return ExpansionTile(
       initiallyExpanded: true,
       title: Text(
@@ -106,33 +114,48 @@ Widget build(BuildContext context) {
         FutureBuilder(
           future: getProject(),
           builder: (context, snapshot) {
-            if(snapshot.data == null) {
+            if (snapshot.data == null) {
               return Container(
                 child: Center(
                   child: Text("Loading"),
                 ),
               );
+            } else {
+              return ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                        title: Text(snapshot.data[index].name),
+                        visualDensity: VisualDensity(vertical: -4.0),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () async {
+                            if (snapshot.data[index].id == 1) {
+                              //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Project can not be deleted")));
+                              return showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      AlertDialog(title: Text("Project can not be deleted.", style: TextStyle(fontSize: 14)), actions: [
+                                        ElevatedButton.icon(
+                                          onPressed: () => Navigator.pop(context),
+                                          icon: Icon(Icons.close_rounded),
+                                          label: Text("Close"),
+                                        ),
+                                      ]));
+                            } else {
+                              deleteProjectWithTS(snapshot.data[index].id);
+                              //await prDAO.delete(snapshot.data[index].id);
+                            }
+                            Navigator.pushReplacementNamed(context, '/');
+                          },
+                        ),
+                        onTap: editProject() //edit the project,
+                        );
+                  });
             }
-            else
-          {return ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemCount: snapshot.data.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                    title: Text(snapshot.data[index].name),
-                    visualDensity: VisualDensity(vertical: -4.0),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () async {
-                        await prDAO.delete(snapshot.data[index].id);
-                        Navigator.pushReplacementNamed(context, '/');
-                      },
-                    ),
-                    onTap: editProject() //edit the project,
-                );
-              });}
-        },
+          },
         )
       ],
     );
