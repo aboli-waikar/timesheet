@@ -1,49 +1,60 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:timesheet/DeleteTimeSheetViewModel.dart';
-import 'package:timesheet/TimesheetModel.dart';
-import 'ExportToExcel.dart';
+import 'package:timesheet/daos/TimesheetTable.dart';
+import 'package:timesheet/models/DeleteTimeSheetViewModel.dart';
+import 'package:timesheet/models/Timesheet.dart';
+import '../ExportToExcel.dart';
 import 'InsertUpdateTimeSheet.dart';
-import 'TimesheetDAO.dart';
+import '../daos/TimesheetDAO.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import '../daos/ProjectDAO.dart';
+import '../models/Project.dart';
 
 class ReadTimeSheet extends StatefulWidget {
+  static String routeName = '/ReadTimeSheet';
   @override
   _ReadTimeSheetState createState() => _ReadTimeSheetState();
 }
 
 class _ReadTimeSheetState extends State<ReadTimeSheet> {
   final tsDAO = TimesheetDAO();
+  final prDAO = ProjectDAO();
   List<DeleteTimeSheetViewModel> listDelTSViewModel;
-  List<TimeSheetModel> timesheetModels;
+  List<TimeSheet> timesheetModels;
   //var selectedMonth = DateTime.now();
   var selectedMonth;
+  var displayName = '';
 
   Future<List<DeleteTimeSheetViewModel>> getTSData() async {
-
     debugPrint(selectedMonth.toString());
-    if(selectedMonth == null)
-    {
-      List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-      timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
-      List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
+    if (selectedMonth == null) {
+      List tsMapList = await tsDAO.getAll(TimesheetTable.Date); //store data retrieved from db to a variable
+      timesheetModels = tsMapList.map((tsRowAsMap) => TimeSheet.convertToTimeSheet(tsRowAsMap)).toList();
+      List<DeleteTimeSheetViewModel> listDelTSViewModel =
+          timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
       return listDelTSViewModel;
-    }
-    else
-    {
-      List tsMapList = await tsDAO.getAll(tsDAO.date); //store data retrieved from db to a variable
-      List tsModels = tsMapList.map((tsRowAsMap) => TimeSheetModel.convertToTimeSheetModel(tsRowAsMap)).toList();
+    } else {
+      List tsMapList = await tsDAO.getAll(TimesheetTable.Date); //store data retrieved from db to a variable
+      List tsModels = tsMapList.map((tsRowAsMap) => TimeSheet.convertToTimeSheet(tsRowAsMap)).toList();
       timesheetModels = tsModels.where((element) => getMonth(element.selectedDate) == getMonth(selectedMonth)).toList();
-      List<DeleteTimeSheetViewModel> listDelTSViewModel = timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
+      List<DeleteTimeSheetViewModel> listDelTSViewModel =
+          timesheetModels.map((tsm) => DeleteTimeSheetViewModel(tsm, false)).toList();
       return listDelTSViewModel;
     }
+  }
 
+  Future<String> getProjectName(int id) async {
+    Map<String, dynamic> prMap = await prDAO.getById(id);
+    Project pr = Project.convertToProject(prMap);
+    String _displayName = pr.displayName;
+    return _displayName;
   }
 
   void copyData(List<DeleteTimeSheetViewModel> initialData) {
     if (listDelTSViewModel == null) {
       listDelTSViewModel = initialData;
+      debugPrint('Initial Data: ${initialData.toString()}');
     }
   }
 
@@ -83,7 +94,8 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
   }
 
   Future<void> selectMonth(BuildContext context) async {
-    final DateTime d = await showMonthPicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
+    final DateTime d = await showMonthPicker(
+        context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2030));
     setState(() {
       selectedMonth = d;
       getTSData();
@@ -131,13 +143,12 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
       flexibleSpace: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.red, Colors.orangeAccent]
-            )
-        ),
+                begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
       ),
-      title: Text("Project: ABC", style: TextStyle(fontSize: 16.0),),
+      title: Text(
+        "Project: ABC",
+        style: TextStyle(fontSize: 16.0),
+      ),
       actions: [
         IconButton(
             icon: Icon(Icons.delete),
@@ -156,13 +167,12 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
       flexibleSpace: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.red, Colors.orangeAccent]
-            )
-        ),
+                begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red, Colors.orangeAccent])),
       ),
-      title: Text("Project: ABC", style: TextStyle(fontSize: 16.0),),
+      title: Text(
+        "Project: ABC",
+        style: TextStyle(fontSize: 16.0),
+      ),
       actions: [
         IconButton(
           icon: Icon(
@@ -181,7 +191,8 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
               color: Colors.white,
             ),
             onPressed: () async {
-              var x = await exportToPDF(timesheetModels, selectedMonth!=null?getMonth(selectedMonth):null); //Send Project name here
+              var x = await exportToPDF(
+                  timesheetModels, selectedMonth != null ? getMonth(selectedMonth) : null); //Send Project name here
               //debugPrint(x); //get filename here
               (x != null) ? showExportCompleteDialog() : showExportProgressDialog();
             }),
@@ -204,7 +215,6 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
         future: getTSData(),
         builder: (context, snapshot) {
           copyData(snapshot.data);
-
           if (snapshot.data == null) {
             return Container(
               child: Center(
@@ -230,6 +240,13 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                     title: Column(children: [
                       Row(
                         children: [
+                          Text("Project ID: ", style: TextStyle(fontSize: 13.0)),
+                          Text(snapshot.data[index].tsModel.projectId.toString(), style: TextStyle(fontSize: 13.0)),
+                          //Text(snapshot.data[index].tsModel.getProject().displayName, style: TextStyle(fontSize: 13.0)),
+                        ],
+                      ),
+                      Row(
+                        children: [
                           Text("Date: ", style: TextStyle(fontSize: 13.0)),
                           Text(snapshot.data[index].tsModel.selectedDateStr, style: TextStyle(fontSize: 13.0)),
                         ],
@@ -242,9 +259,11 @@ class _ReadTimeSheetState extends State<ReadTimeSheet> {
                         ],
                       )
                     ]),
-                    subtitle: Text(snapshot.data[index].tsModel.workDescription, style: TextStyle(fontSize: 14.0, color: Colors.green)),
+                    subtitle: Text(snapshot.data[index].tsModel.workDescription,
+                        style: TextStyle(fontSize: 14.0, color: Colors.green)),
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => InsertUpdateTimeSheet(snapshot.data[index].tsModel)));
                     });
               },
             );

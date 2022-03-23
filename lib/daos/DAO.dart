@@ -1,19 +1,17 @@
-import 'dart:io';
-import 'package:timesheet/Domain.dart';
+import 'package:timesheet/daos/DBCreator.dart';
+import 'package:timesheet/models/Domain.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 
 class DAO<T extends Domain> {
-  //Constructor definition, _variables are private to class and not exposed directly.
+  // Constructor definition, _variables are private to class and not exposed directly.
 
   static Database _db;
   String _tableName;
   String _pkColumn;
   String _colNamesWithDbTypes;
 
-  //Use getter and setter methods to asscociate with private variables of class.
+  // Use getter and setter methods to asscociate with private variables of class.
   String get tableName => _tableName;
 
   set tableName(String tableName) {
@@ -32,39 +30,22 @@ class DAO<T extends Domain> {
     this._colNamesWithDbTypes = colNamesWithDbTypes;
   }
 
+  String get createTableStatement => "CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)";
+
   Future<Database> get db async {
-    if (_db != null) {
-      print("_db instance is not null");
-      return _db;
-    }
-
-    print("_db instance is null");
-    _db = await initDb();
-    return _db;
+    var dbc = new DbCreator();
+    return dbc.initDb();
   }
 
-  initDb() async {
-    print("_initializing db");
-
-    Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentDirectory.path, "notodo_db.db");
-    var ourDb = await openDatabase(path, version: 1, onCreate: _onCreate);
-    return ourDb;
-  }
-
-  void _onCreate(Database db, int version) async {
-    await db.execute("CREATE TABLE $tableName($pkColumn INTEGER PRIMARY KEY, $colNamesWithDbTypes)");
-    print("Table is created");
-  }
-
-  /// This method is getItems method.
   Future<List> getAll(String sortColumn) async {
     var dbClient = await db;
-    var result = await dbClient.query("$tableName", orderBy:"$sortColumn DESC",);
+    var result = await dbClient.query(
+      "$tableName",
+      orderBy: "$sortColumn DESC",
+    );
     var res = result.toList();
     //print(res);
     return res;
-
   }
 
   Future<int> getCount() async {
@@ -72,15 +53,17 @@ class DAO<T extends Domain> {
     return Sqflite.firstIntValue(await dbClient.rawQuery("SELECT COUNT(*) FROM $tableName"));
   }
 
-  Future<Map<String, dynamic>> getById(int id) async {
+  Future<Map<String, dynamic>> getById(int id, {String query = ''}) async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE id =$id");
+    var defaultQuery = "SELECT * FROM $tableName WHERE id = $id";
+    var actualQuery = query == '' ? defaultQuery : query;
+    var result = await dbClient.rawQuery(actualQuery);
     if (result.length == 0) return null;
     return result.first;
   }
 
   Future<int> insert(T t) async {
-    print("inserting: $t");
+    print("DAO - inserting: $t");
     var dbClient = await db;
     int res = await dbClient.insert("$tableName", t.mapForDBInsert());
     print(res.toString());
