@@ -1,10 +1,11 @@
 class ChartViewModel {
   final DateTime date;
   final num hrs;
+  final String projectName;
 
   // final num Min;
 
-  ChartViewModel(this.date, this.hrs);
+  ChartViewModel(this.date, this.hrs, this.projectName);
 
   num getMins() {
     var x = hrs.toInt();
@@ -19,6 +20,6 @@ class ChartViewModel {
 
   @override
   String toString() {
-    return "ChartModel($date, $hrs)";
+    return "ChartModel($date, $hrs, $projectName)";
   }
 }

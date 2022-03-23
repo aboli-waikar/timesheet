@@ -21,12 +21,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var chModel = ChartViewModel(DateTime.now(), 0);
-  List<ChartViewModel> _myData = [ChartViewModel(DateTime.now(), 0)];
-  var selectedMonth = DateTime.now();
-  var prDAO = ProjectDAO();
-  var prModel = Project.getNullObject();
-  var projectList = [''];
+  var chModel = ChartViewModel(DateTime.now(), 0, 'Default');
+  List<ChartViewModel> _myData = [ChartViewModel(DateTime.now(), 0, 'Default')];
+  DateTime selectedMonth = DateTime.now();
+  final prDAO = ProjectDAO();
+  final tsDAO = TimesheetDAO();
+  List<String> projectList = [''];
+  //var projectName = 'Default';
 
   @override
   void initState() {
@@ -65,29 +66,34 @@ class _HomeState extends State<Home> {
   }
 
   Future getTSData() async {
-    final tsDAO = TimesheetDAO();
-    List tsMapList = await tsDAO.getAll(TimesheetTable.Date); //store data retrieved from db to a variable
-    var tsModels = tsMapList.map((e) => TimeSheet.convertToTimeSheet(e)).toList();
-    //debugPrint(tsModels.join(", ").toString());
+    debugPrint("In getTSData()");
+    var tsPrDBRows = await tsDAO.getTimeSheetAndProjectName();
+    var tsPrModels = tsPrDBRows.map((e) => TimeSheet.convertToProjectTimeSheet(e)).toList();
+    debugPrint('From Database: ${tsPrDBRows.toString()}');
+    debugPrint('From Map: ${tsPrModels.toString()}');
 
+    //debugPrint(tsModels.join(", ").toString());
+    //Need a joint query here as get Project is not working.
     setState(() {
       //debugPrint(selectedMonth.toString());
-      _myData = tsModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(selectedMonth)).map((tsModel) {
-        final DateTime date = tsModel.selectedDate;
-        var hrs = tsModel.hrs;
-        return ChartViewModel(date, hrs);
+      _myData = tsPrModels.where((tsModel) => getMonth(tsModel.selectedDate) == getMonth(selectedMonth)).map((tsModel) {
+        return ChartViewModel(tsModel.selectedDate, tsModel.hrs, tsModel.project.name);
       }).toList();
     });
-    //debugPrint(_myData.join(", ").toString());
+    debugPrint('MyData: ${_myData.join(", ").toString()}');
   }
 
-  Widget getTSChart() {
+  Widget getTSChart(String projectName) {
+    debugPrint("ProjectName: $projectName");
+    //var currentChVM = _myData.where((element) => element.projectName == projectName).first;
     final List<Charts.Series<ChartViewModel, DateTime>> seriesList = [
       Charts.Series<ChartViewModel, DateTime>(
         id: 'chart000',
-        domainFn: (ChartViewModel chartData, _) => chartData.date,
-        measureFn: (ChartViewModel chartData, _) => chartData.hrs,
-        colorFn: (ChartViewModel chartData, _) => Charts.MaterialPalette.green.shadeDefault,
+        domainFn: (ChartViewModel chViewModel, _) => (chViewModel.projectName == projectName)? chViewModel.date : DateTime.now(),
+        // domainFn: (ChartViewModel chViewModel, _) => currentChVM.date,
+        measureFn: (ChartViewModel chViewModel, _) => (chViewModel.projectName == projectName)? chViewModel.hrs : 0,
+        // measureFn: (ChartViewModel chViewModel, _) => currentChVM.hrs,
+        colorFn: (ChartViewModel chViewModel, _) => Charts.MaterialPalette.green.shadeDefault,
         data: _myData,
       ),
     ];
@@ -153,7 +159,8 @@ class _HomeState extends State<Home> {
                           child: Container(
                               //color: Theme.of(context).colorScheme.background,
                               padding: MediaQuery.of(context).padding,
-                              child: getTSChart(),
+                              child: getTSChart('${projectList[index]}'),
+                              //child: getTSChart(),
                               height: 185,
                               width: 200))
                     ]),

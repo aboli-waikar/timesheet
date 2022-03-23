@@ -46,7 +46,7 @@ class ProjectsState extends State<Projects> {
   editProject() {}
 
   deleteProjectWithTS(int id) async {
-    var tsMapList = await tsDAO.getAllForProject(id, tsDAO.pkColumn);
+    var tsMapList = await tsDAO.getTimeSheetsForAProject(id, tsDAO.pkColumn);
     List<TimeSheet> tsModels = tsMapList.map((e) => TimeSheet.convertToTimeSheet(e)).toList();
     debugPrint("Projects - tsModel: ${tsModels.toString()}");
     List tsModelIds = tsModels.map((e) => e.id).toList();

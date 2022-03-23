@@ -42,3 +42,6 @@ A widget may extend a StatefulWidget, or a StatelessWidget.
 1. Start Timer
 2. Expenses
 3. To Do List
+
+# Issues
+1. getProject() method not working, hence, SQL query needs to modify.
